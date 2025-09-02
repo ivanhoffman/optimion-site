@@ -18,7 +18,7 @@ export default function Header({ variant = "site" }) {
     { label: "Integrations", href: "/#integrations" },
     { label: "Testimonials", href: "/#testimonials" },
     { label: "FAQ", href: "/#faq" },
-    { label: "Get Started", href: "/#final-cta" },
+    { label: "Get Started", href: "/#get-started" },
   ];
 
   return (

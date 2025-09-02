@@ -40,7 +40,7 @@ export default function AboutSection() {
 
         <p className="text-gray-300 text-lg mb-6">
           We build flows that recover lost sales, automate follow-ups, and keep your funnel
-          working 24/7 — so you don’t have to.
+          working 24/7.
         </p>
 
         <ul className="space-y-3 mb-6">

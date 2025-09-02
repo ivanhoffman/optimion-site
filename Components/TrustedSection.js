@@ -112,7 +112,7 @@ export default function TrustedSection() {
           Built for the way your business runs.
         </h2>
         <p className="text-gray-300 text-lg mt-4">
-          From small businesses to enterprises—spanning Pest Control, Real Estate, Roofing,
+          From small businesses to enterprises—spanning Healthcare, Hospitality, SaaS, Financial Services, Real Estate, Home Services, Roofing,
           E-Commerce, Manufacturing, and more—we connect the stack, automate the work, and surface the metrics that matter.
         </p>
       </motion.div>

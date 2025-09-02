@@ -90,12 +90,6 @@ export default function PrivacyPage() {
             <li>Contact us to exercise your rights or ask questions.</li>
           </ul>
 
-          {/* Children */}
-          <h2 className="mt-10 text-xl font-semibold">Children’s Privacy</h2>
-          <p className="mt-3 text-gray-300">
-            Our services are not directed to children under 13. We do not knowingly collect personal information from
-            children.
-          </p>
 
           {/* Contact */}
           <h2 className="mt-10 text-xl font-semibold">Contact</h2>
