@@ -1,4 +1,3 @@
-// Components/HeroSection.js
 "use client";
 
 import { useState } from "react";
@@ -7,24 +6,15 @@ import { ArrowRight, Check } from "lucide-react";
 import CalendlyModal from "@/Components/CalendlyModal";
 
 /**
- * Per-chip controls:
- *  - angle: degrees around the circle (0=top, 90=right, 180=bottom, 270=left)
- *  - rFromRing: distance from the animated ring (overrides radius if present)
- *  - dx/dy: pixel nudges
- *  - outward: push along the angle’s normal (positive = farther from center)
- *  - anchor: "auto" | "left" | "right" | "top" | "bottom" | "center"
+ * Visual — unchanged functionally, just give the wrapper an id for CSS.
  */
 function HeroVisual() {
-  // --- Circle geometry ---
   const SIZE = 520;
   const cx = SIZE / 2, cy = SIZE / 2;
   const R_DISC = 245;
   const R_RING = 235;
-
-  // Default chip radius (a little outside the ring)
   const R_DEFAULT = R_RING + 12;
 
-  // === CHIP CONTROLS (angles unchanged) ===
   const CHIPS = [
     { label: "Assessment",    angle: 350, rFromRing: 12, dx: -14, anchor: "top" },
     { label: "Configuration", angle:  50, rFromRing: 12, dx: -10, anchor: "auto" },
@@ -34,12 +24,10 @@ function HeroVisual() {
     { label: "Process Design",angle: 310, rFromRing: 12, dx: -136, outward: 4, anchor: "left" },
   ];
 
-  // Helpers
-  const toXY = (angleDeg, radius) => {
-    const a = ((angleDeg - 90) * Math.PI) / 180; // 0° at top
-    return { x: cx + radius * Math.cos(a), y: cy + radius * Math.sin(a), a };
+  const toXY = (deg, r) => {
+    const a = ((deg - 90) * Math.PI) / 180;
+    return { x: cx + r * Math.cos(a), y: cy + r * Math.sin(a), a };
   };
-
   const anchorTransform = (a, forced) => {
     if (forced && forced !== "auto") {
       switch (forced) {
@@ -58,38 +46,21 @@ function HeroVisual() {
     }
   };
 
-  // Build chip positions (no clamping — your dx/dy are literal)
   const chips = CHIPS.map((c, i) => {
-    const baseR = c.rFromRing !== undefined ? R_RING + c.rFromRing : R_DEFAULT;
+    const baseR = c.rFromRing !== undefined ? R_RING + c.rFromRing : (c.radius ?? R_DEFAULT);
     const { x: px, y: py, a } = toXY(c.angle, baseR);
     const out = c.outward ?? 0;
-
     let x = px + out * Math.cos(a);
     let y = py + out * Math.sin(a);
     x += c.dx ?? 0;
     y += c.dy ?? 0;
-
-    return {
-      label: c.label,
-      left: `${x}px`,
-      top: `${y}px`,
-      transform: anchorTransform(a, c.anchor),
-      delay: 0.25 + i * 0.12,
-    };
+    return { label: c.label, left: `${x}px`, top: `${y}px`, transform: anchorTransform(a, c.anchor), delay: 0.25 + i * 0.12 };
   });
 
   return (
-    <div className="relative w-[520px] h-[520px] pointer-events-none">
-      {/* DISC + NETWORK (bottom layer) */}
+    <div id="hero-visual" className="relative w-[520px] h-[520px] pointer-events-none">
       <div className="absolute inset-0 rounded-full overflow-hidden opacity-90 z-0">
-        <svg
-          width="100%"
-          height="100%"
-          viewBox={`0 0 ${SIZE} ${SIZE}`}
-          xmlns="http://www.w3.org/2000/svg"
-          role="img"
-          aria-label="Animated system network"
-        >
+        <svg width="100%" height="100%" viewBox={`0 0 ${SIZE} ${SIZE}`} xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Animated system network">
           <defs>
             <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
               <stop offset="0%" stopColor="#22d3ee" />
@@ -102,22 +73,9 @@ function HeroVisual() {
             </radialGradient>
           </defs>
 
-          {/* Dark disc */}
           <circle cx={cx} cy={cy} r={R_DISC} fill="url(#disc)" />
+          <circle cx={cx} cy={cy} r={R_RING} fill="none" stroke="url(#g1)" strokeWidth="2" strokeLinecap="round" className="orbit" />
 
-          {/* Orbit ring */}
-          <circle
-            cx={cx}
-            cy={cy}
-            r={R_RING}
-            fill="none"
-            stroke="url(#g1)"
-            strokeWidth="2"
-            strokeLinecap="round"
-            className="orbit"
-          />
-
-          {/* Connections */}
           <g stroke="url(#g1)" strokeWidth="2" strokeLinecap="round" fill="none" opacity="0.9">
             <path className="draw d1" d={`M150 180 L260 120 L370 180`} />
             <path className="draw d2" d={`M150 180 L160 320 L260 380`} />
@@ -126,7 +84,6 @@ function HeroVisual() {
             <path className="draw d5" d={`M260 120 L260 260`} />
           </g>
 
-          {/* Nodes */}
           <g fill="none" stroke="url(#g1)" strokeWidth="2">
             {[[150,180],[260,120],[370,180],[160,320],[260,380],[370,320],[260,260]].map(([x,y], i) => (
               <g key={i}>
@@ -136,7 +93,6 @@ function HeroVisual() {
             ))}
           </g>
 
-          {/* Central tick */}
           <g stroke="url(#g1)" strokeWidth="3" strokeLinecap="round" fill="none" opacity="0.95">
             <path className="tick" d={`M244 262 L256 274 L280 248`} />
           </g>
@@ -156,7 +112,6 @@ function HeroVisual() {
         </svg>
       </div>
 
-      {/* Chips (with subtle shadow for readability) */}
       <div className="absolute inset-0 z-10">
         {chips.map((p) => (
           <motion.span
@@ -180,52 +135,53 @@ export default function HeroSection() {
   const [showCal, setShowCal] = useState(false);
 
   return (
-    // Hide overflow on small screens to prevent any stray horizontal scroll.
     <section
       id="hero"
-      className="section-fade relative min-h-screen text-white flex items-center md:justify-between px-6 md:px-16 overflow-hidden md:overflow-visible"
+      className="
+        section-fade relative
+        min-h-[88svh] md:min-h-screen
+        text-white
+        flex items-start md:items-center
+        justify-between
+        px-6 md:px-16
+        pt-16 pb-10 md:pt-0 md:pb-0
+        overflow-visible
+      "
     >
       <div className="max-w-2xl z-10">
-        <motion.h1
-          initial={{ opacity: 0, x: -50 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.8 }}
-          viewport={{ once: true }}
-          className="mb-4"
-        >
+        <motion.h1 initial={{opacity:0,x:-50}} whileInView={{opacity:1,x:0}} transition={{duration:.8}} viewport={{once:true}} className="mb-4">
           <span className="text-4xl md:text-5xl font-medium leading-tight text-transparent bg-clip-text gradient-text antialiased">
             Welcome to the
           </span>
         </motion.h1>
 
         <motion.h2
-          initial={{ opacity: 0, x: -50 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.2, duration: 0.8 }}
-          viewport={{ once: true }}
+          initial={{opacity:0,x:-50}}
+          whileInView={{opacity:1,x:0}}
+          transition={{delay:.2,duration:.8}}
+          viewport={{once:true}}
           className="text-5xl font-extrabold mb-4 bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-500 text-transparent bg-clip-text"
         >
           Optimion System
         </motion.h2>
 
         <motion.p
-          initial={{ opacity: 0, x: -50 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.4, duration: 0.8 }}
-          viewport={{ once: true }}
+          initial={{opacity:0,x:-50}}
+          whileInView={{opacity:1,x:0}}
+          transition={{delay:.4,duration:.8}}
+          viewport={{once:true}}
           className="text-gray-300 text-lg max-w-lg mb-6"
         >
-          We build custom CRMs, powerful automations, and optimized workflows for any business.
-          Eliminate bottlenecks. Unlock growth.
+          We build custom CRMs, powerful automations, and optimized workflows for any business. Eliminate bottlenecks. Unlock growth.
         </motion.p>
 
         <motion.button
           type="button"
           onClick={() => setShowCal(true)}
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6, duration: 0.6 }}
-          viewport={{ once: true }}
+          initial={{opacity:0,y:20}}
+          whileInView={{opacity:1,y:0}}
+          transition={{delay:.6,duration:.6}}
+          viewport={{once:true}}
           className="group inline-flex items-center gap-2 px-5 py-3 bg-neutral-900 hover:bg-neutral-800 text-white border border-neutral-700 rounded-md text-sm transition-colors"
         >
           Book a Free Call
@@ -233,21 +189,16 @@ export default function HeroSection() {
         </motion.button>
       </div>
 
-      {/* RIGHT VISUAL — hidden on mobile */}
-      <div className="absolute right-0 top-0 bottom-0 w-1/2 items-center justify-center hidden md:flex">
+      {/* RIGHT VISUAL — hidden on mobile via CSS id */}
+      <div className="pointer-events-none hidden md:flex absolute md:static right-0 top-0 bottom-0 w-full md:w-1/2 items-center justify-center">
         <HeroVisual />
       </div>
 
-      {/* Stylized Calendly modal */}
       <CalendlyModal
         open={showCal}
         onClose={() => setShowCal(false)}
         url="https://calendly.com/ivan-optimion/30min"
-        colors={{
-          background: "#0b0b0d",
-          text: "#e5e7eb",
-          primary: "#22d3ee",
-        }}
+        colors={{ background: "#0b0b0d", text: "#e5e7eb", primary: "#22d3ee" }}
       />
     </section>
   );

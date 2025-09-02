@@ -16,7 +16,15 @@ export default function AboutSection() {
   return (
     <section
       id="about"
-      className="section-fade relative min-h-screen flex flex-col-reverse md:flex-row items-center justify-between px-6 md:px-16 py-24 overflow-visible text-white"
+      className="
+        section-fade relative
+        min-h-[80svh] md:min-h-screen
+        flex flex-col-reverse md:flex-row
+        items-center justify-between
+        px-6 md:px-16
+        py-14 md:py-24
+        overflow-visible text-white
+      "
     >
       {/* LEFT: Flowchart — hidden on mobile */}
       <div className="hidden md:flex w-full md:w-1/2 justify-center items-center">
@@ -78,11 +86,7 @@ export default function AboutSection() {
         isOpen={calOpen}
         onClose={() => setCalOpen(false)}
         url="https://calendly.com/ivan-optimion/30min"
-        colors={{
-          background: "#0b0b0d",
-          text: "#e5e7eb",
-          primary: "#22d3ee",
-        }}
+        colors={{ background: "#0b0b0d", text: "#e5e7eb", primary: "#22d3ee" }}
       />
     </section>
   );
@@ -257,6 +261,7 @@ function Flowchart() {
 
   return (
     <motion.div
+      id="process-flowchart"
       initial={{ rotateY: -8, opacity: 0, scale: 0.98 }}
       whileInView={{ rotateY: 0, opacity: 1, scale: 1 }}
       transition={{ duration: 0.55, ease: "easeOut" }}
@@ -305,20 +310,8 @@ function Flowchart() {
           `}</style>
         </defs>
 
-        {/* Canvas */}
-        <rect
-          x="0"
-          y="0"
-          width={W}
-          height={H}
-          rx={BOARD.cornerR}
-          fill={`url(#${discId})`}
-          stroke={BOARD.orbitStroke}
-          strokeWidth={BOARD.strokeW}
-        />
-
         {/* --- CONNECTORS FIRST (behind nodes) --- */}
-        {/* Vertical stems (glow under, crisp on top) */}
+        {/* Vertical stems */}
         <g fill={`url(#${gradId})`} stroke="none" pointerEvents="none">
           {edges.map((e, i) => {
             const s = byId[e.from], t = byId[e.to];
@@ -370,7 +363,7 @@ function Flowchart() {
           })}
         </g>
 
-        {/* Elbowed edges (glow under, crisp on top) */}
+        {/* Elbowed edges */}
         <g
           fill="none"
           stroke={`url(#${gradId})`}
@@ -382,16 +375,14 @@ function Flowchart() {
         >
           {edges.map((e, i) => {
             const s = byId[e.from], t = byId[e.to];
-            if (Math.abs(s.x - t.x) < 0.001) return null; // handled above
+            if (Math.abs(s.x - t.x) < 0.001) return null;
 
             const bendY = e.meta?.bend === "collector" ? collectorY : e.meta?.bendY;
             const seg = e.route === "hvh" ? pathHVH(s, t, bendY) : pathVH(s, t, bendY);
 
             return (
               <g key={`path-${e.from}-${e.to}-${i}`}>
-                {/* glow underneath */}
                 <path d={seg.d} className="flow" />
-                {/* crisp animated stroke on top */}
                 <motion.path
                   d={seg.d}
                   initial={{ pathLength: 0 }}
@@ -443,8 +434,7 @@ function Flowchart() {
             .map((e, i) => {
               const s = byId[e.from], t = byId[e.to];
               const at = typeof e.meta.labelAt === "number" ? e.meta.labelAt : 0.5;
-              const yRef =
-                e.meta?.bend === "collector" ? collectorY : e.meta?.bendY ?? (s.y + t.y) / 2;
+              const yRef = e.meta?.bend === "collector" ? collectorY : e.meta?.bendY ?? (s.y + t.y) / 2;
               const x = s.x + (t.x - s.x) * at + (e.meta?.labelDx ?? 0);
               const y = yRef + (e.meta?.labelDy ?? -8);
               return <text key={`lbl-${i}`} x={x} y={y}>{e.meta.label}</text>;
@@ -518,7 +508,6 @@ function TextBlock({ node, isDiamond, defaultDx = 0, defaultDy = 0 }) {
   if (isDiamond) {
     const lines = node.opts?.titleLines ?? wrapDiamond(node.title, 12, 2);
 
-    // Size/line-height tuning based on line count
     let fs = 12;
     let lh = 12;
     if (lines.length === 3)      { fs = 10;   lh = 11; }
@@ -526,11 +515,9 @@ function TextBlock({ node, isDiamond, defaultDx = 0, defaultDy = 0 }) {
 
     const totalH = lh * (lines.length - 1);
 
-    // Per-node nudge plus global default
     const titleDx = (node.opts?.titleDx ?? 0) + defaultDx;
     const titleDy = (node.opts?.titleDy ?? 0) + defaultDy;
 
-    // Start Y so block is vertically centered, then nudge by titleDy
     const y0 = node.y - totalH / 2 + titleDy;
 
     return (
@@ -554,7 +541,6 @@ function TextBlock({ node, isDiamond, defaultDx = 0, defaultDy = 0 }) {
     );
   }
 
-  // Rect nodes
   return (
     <g textAnchor="middle" pointerEvents="none">
       <text x={node.x} y={node.y - 4} fontSize="15" fontWeight={600} fill="#e5e7eb">
