@@ -16,13 +16,12 @@ export default function CalendlyModal({
   onClose,
   url,
   colors = {
-    background: "#0b0b0d", // page background inside iframe
-    text: "#e5e7eb",       // text color
-    primary: "#22d3ee",    // accent (buttons/links)
+    background: "#0b0b0d",
+    text: "#e5e7eb",
+    primary: "#22d3ee",
   },
 }) {
   const containerRef = useRef(null);
-  const moRef = useRef(null); // keep a handle to disconnect on cleanup
 
   // Build a URL with Calendly color params
   const themedUrl = (() => {
@@ -34,24 +33,6 @@ export default function CalendlyModal({
     });
     return `${url}${url.includes("?") ? "&" : "?"}${params.toString()}`;
   })();
-
-  // Force the injected Calendly iframe’s own element to a dark background.
-  // (We cannot style its *contents*, but the element background shows around the “sheet”.)
-  const paintIframeDark = () => {
-    const host = containerRef.current;
-    if (!host) return;
-
-    const iframe = host.querySelector("iframe");
-    if (iframe) {
-      // element background (outside Calendly's inner sheet)
-      iframe.style.background = colors.background;
-      iframe.style.display = "block";
-      iframe.style.width = "100%";
-      iframe.style.height = "100%";
-      iframe.style.border = "0";
-      iframe.setAttribute("allowtransparency", "true"); // harmless, helps older engines
-    }
-  };
 
   useEffect(() => {
     if (!open) return;
@@ -68,27 +49,10 @@ export default function CalendlyModal({
     // Ensure Calendly script, then init inline widget
     const initInline = () => {
       if (!containerRef.current) return;
-      // Clear any previous iframe
       containerRef.current.innerHTML = "";
-
-      // (re)render the widget
       window.Calendly?.initInlineWidget?.({
         url: themedUrl,
         parentElement: containerRef.current,
-      });
-
-      // Immediately try to paint, and also watch for re-renders
-      paintIframeDark();
-
-      // Observe children—Calendly can re-create the iframe on navigation
-      if (moRef.current) moRef.current.disconnect();
-      moRef.current = new MutationObserver(() => {
-        // on any change, repaint the iframe element background
-        paintIframeDark();
-      });
-      moRef.current.observe(containerRef.current, {
-        childList: true,
-        subtree: true,
       });
     };
 
@@ -107,7 +71,6 @@ export default function CalendlyModal({
     }
 
     return () => {
-      if (moRef.current) moRef.current.disconnect();
       if (containerRef.current) containerRef.current.innerHTML = "";
     };
   }, [open, themedUrl]);
@@ -116,7 +79,7 @@ export default function CalendlyModal({
 
   return (
     <div
-      className="fixed inset-0 z-[99999]"  // <- ensure we sit above everything
+      className="fixed inset-0 z-[99999]"
       aria-modal="true"
       role="dialog"
     >
@@ -127,7 +90,7 @@ export default function CalendlyModal({
         className="absolute inset-0 bg-black/65 backdrop-blur-sm"
       />
 
-      {/* Modal shell (your exact glass UI; only minor additions: `isolate` and bg on host) */}
+      {/* Modal shell (unchanged glass) */}
       <div className="absolute inset-0 flex items-center justify-center p-4">
         <div
           className="relative isolate w-full max-w-[960px] h-[82vh] rounded-2xl border border-white/10 bg-neutral-950/90 shadow-2xl overflow-hidden
@@ -137,7 +100,7 @@ export default function CalendlyModal({
           {/* Close button (unchanged) */}
           <button
             onClick={onClose}
-            className="absolute top-2 right-2 z-10 inline-flex h-9 w-9 items-center justify-center rounded-md
+            className="absolute top-2 right-2 z-20 inline-flex h-9 w-9 items-center justify-center rounded-md
                        bg-white/5 hover:bg-white/10 border border-white/10 text-gray-200"
             aria-label="Close scheduling modal"
             type="button"
@@ -145,11 +108,25 @@ export default function CalendlyModal({
             ✕
           </button>
 
-          {/* Calendly inline container (give the host a dark fill too) */}
-          <div
-            ref={containerRef}
-            className="w-full h-full bg-[#0b0b0d]"
-          />
+          {/* Calendly inline container */}
+          <div className="relative w-full h-full">
+            {/* Always-on anti-sheet veil (covers Calendly's white gutters but leaves center clear) */}
+            <div
+              className="pointer-events-none absolute inset-0 z-10"
+              style={{
+                // side gutters darken + top/bottom fade; center remains transparent
+                background: [
+                  // side vignette to remove white side sheets
+                  "linear-gradient(to right, rgba(11,11,13,.96) 0%, rgba(11,11,13,.92) 10%, rgba(11,11,13,0) 24%, rgba(11,11,13,0) 76%, rgba(11,11,13,.92) 90%, rgba(11,11,13,.96) 100%)",
+                  // top fade (Calendly has a light header glow)
+                  "linear-gradient(to bottom, rgba(11,11,13,.95) 0px, rgba(11,11,13,0) 140px)",
+                  // bottom fade (just in case)
+                  "linear-gradient(to top, rgba(11,11,13,.95) 0px, rgba(11,11,13,0) 140px)",
+                ].join(", "),
+              }}
+            />
+            <div ref={containerRef} className="w-full h-full bg-[#0b0b0d]" />
+          </div>
         </div>
       </div>
     </div>
