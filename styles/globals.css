@@ -14,6 +14,9 @@
   );
 }
 
+/* Prefer dark UI chrome (affects default scrollbar/form UI) */
+html { color-scheme: dark; }
+
 /* Basic root sizing */
 html, body { height: 100%; margin: 0; padding: 0; }
 
@@ -98,7 +101,7 @@ svg { overflow: visible; }
 
   /* 2) Make body the scroller and lock it to the viewport height */
   body {
-    height: 100vh;           /* body forms the scrollport */
+    height: 100vh;                    /* body forms the scrollport */
     overflow-y: auto !important;
     -webkit-overflow-scrolling: touch; /* smooth scrolling on WebKit */
   }
@@ -117,6 +120,25 @@ svg { overflow: visible; }
     height: auto !important;
     max-height: none !important;
     overflow-y: visible !important;
+  }
+
+  /* ---------- Custom dark scrollbar (Chromium/Safari) ---------- */
+  body::-webkit-scrollbar { width: 12px; height: 12px; }
+  body::-webkit-scrollbar-track { background: transparent; }
+  body::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #22d3ee 0%, #8b5cf6 50%, #ec4899 100%);
+    border-radius: 999px;
+    border: 3px solid rgba(0,0,0,.6); /* dark gap around thumb */
+  }
+  body::-webkit-scrollbar-thumb:hover { filter: brightness(1.05); }
+  body::-webkit-scrollbar-corner { background: transparent; }
+}
+
+/* Firefox scrollbar */
+@supports (scrollbar-color: auto) {
+  html {
+    scrollbar-width: thin;
+    scrollbar-color: #5b5b5b transparent; /* thumb | track */
   }
 }
 
