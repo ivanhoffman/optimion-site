@@ -11,7 +11,8 @@ import FAQSection from "@/Components/FAQSection";
 import FinalCTASection from "@/Components/FinalCTASection";
 import TrustedSection from "@/Components/TrustedSection";
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://www.optimion.com";
+const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL || "https://www.optimion.us";
 const OG_IMAGE = `${SITE_URL}/og-image.jpg`; // ensure this exists
 const LOGO_URL = `${SITE_URL}/logo.png`;     // ensure this exists (512x512+)
 
