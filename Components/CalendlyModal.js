@@ -1,10 +1,12 @@
 // Components/CalendlyModal.js
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useMemo } from "react";
 
 /**
- * A stylized modal that hosts Calendly's inline widget.
+ * A stylized modal that hosts Calendly via a direct iframe (no widget.js),
+ * which avoids the light wrapper (“white sheet”) entirely.
+ *
  * Props:
  *  - open: boolean
  *  - onClose: () => void
@@ -16,75 +18,33 @@ export default function CalendlyModal({
   onClose,
   url,
   colors = {
-    background: "#0b0b0d", // page background inside iframe
-    text: "#e5e7eb",       // text color
-    primary: "#22d3ee",    // accent (buttons/links)
+    background: "#0b0b0d",
+    text: "#e5e7eb",
+    primary: "#22d3ee",
   },
 }) {
-  const containerRef = useRef(null);
+  // Build a themed embed URL (works without widget.js)
+  const embedUrl = useMemo(() => {
+    if (!url) return "";
+    const u = new URL(url);
+    u.searchParams.set("hide_gdpr_banner", "1");
+    u.searchParams.set("embed_type", "Inline");
+    // embed_domain helps Calendly size correctly
+    const domain =
+      typeof window !== "undefined" ? window.location.hostname : "optimion.us";
+    u.searchParams.set("embed_domain", domain);
 
-  // Build a URL with Calendly color params
-  const themedUrl = (() => {
-    const params = new URLSearchParams({
-      background_color: stripHash(colors.background),
-      text_color: stripHash(colors.text),
-      primary_color: stripHash(colors.primary),
-      hide_gdpr_banner: "1",
-    });
-    return `${url}${url.includes("?") ? "&" : "?"}${params.toString()}`;
-  })();
-
-  useEffect(() => {
-    if (!open) return;
-
-    // Ensure Calendly CSS
-    if (!document.getElementById("calendly-widget-css")) {
-      const link = document.createElement("link");
-      link.id = "calendly-widget-css";
-      link.rel = "stylesheet";
-      link.href = "https://assets.calendly.com/assets/external/widget.css";
-      document.head.appendChild(link);
-    }
-
-    // Ensure Calendly script, then init inline widget
-    const initInline = () => {
-      if (!containerRef.current) return;
-      // Clear any previous iframe
-      containerRef.current.innerHTML = "";
-      window.Calendly?.initInlineWidget?.({
-        url: themedUrl,
-        parentElement: containerRef.current,
-      });
-    };
-
-    const existing = document.getElementById("calendly-widget-script");
-    if (window.Calendly?.initInlineWidget) {
-      initInline();
-    } else if (existing) {
-      existing.addEventListener("load", initInline, { once: true });
-    } else {
-      const s = document.createElement("script");
-      s.id = "calendly-widget-script";
-      s.src = "https://assets.calendly.com/assets/external/widget.js";
-      s.async = true;
-      s.onload = initInline;
-      document.head.appendChild(s);
-    }
-
-    return () => {
-      // Optional cleanup: remove iframe contents
-      if (containerRef.current) containerRef.current.innerHTML = "";
-    };
-  }, [open, themedUrl]);
+    // Theme
+    u.searchParams.set("background_color", stripHash(colors.background));
+    u.searchParams.set("text_color", stripHash(colors.text));
+    u.searchParams.set("primary_color", stripHash(colors.primary));
+    return u.toString();
+  }, [url, colors.background, colors.text, colors.primary]);
 
   if (!open) return null;
 
   return (
-    <div
-      className="fixed inset-0 z-[99999]"  /* raised to stay over page text */
-      aria-modal="true"
-      role="dialog"
-    >
+    <div className="fixed inset-0 z-[99999] calendly-modal" aria-modal="true" role="dialog">
       {/* Backdrop (unchanged) */}
       <button
         aria-label="Close"
@@ -110,24 +70,17 @@ export default function CalendlyModal({
             ✕
           </button>
 
-          {/* ---- Anti-white-sheet overlay (new) ---- */}
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-0 z-10"
-            style={{
-              // Only darken the outer gutters; center remains 100% clear.
-              mixBlendMode: "multiply",
-              background: "#0b0b0d",
-              opacity: 0.92,
-              WebkitMaskImage:
-                "radial-gradient(130% 95% at 50% 45%, rgba(0,0,0,0) 62%, rgba(0,0,0,1) 78%)",
-              maskImage:
-                "radial-gradient(130% 95% at 50% 45%, rgba(0,0,0,0) 62%, rgba(0,0,0,1) 78%)",
-            }}
-          />
-
-          {/* Calendly inline container (unchanged) */}
-          <div ref={containerRef} className="w-full h-full" />
+          {/* Calendly iframe (no widget.js wrapper = no white sheet) */}
+          <div className="w-full h-full calendly-host">
+            <iframe
+              title="Schedule with Optimion"
+              src={embedUrl}
+              className="w-full h-full block"
+              frameBorder="0"
+              allow="camera; microphone; fullscreen; geolocation"
+              referrerPolicy="no-referrer-when-downgrade"
+            />
+          </div>
         </div>
       </div>
     </div>
