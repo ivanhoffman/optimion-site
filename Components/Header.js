@@ -1,29 +1,89 @@
 // Components/Header.js
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import CalendlyModal from "@/Components/CalendlyModal";
 import { CalendarDays } from "lucide-react";
+
+/** Smoothly scroll to an element ID, accounting for sticky header height. */
+function scrollToId(id) {
+  if (!id) return;
+  const el = document.getElementById(id);
+  if (!el) return;
+
+  const header = document.querySelector("header");
+  const offset = (header?.getBoundingClientRect().height ?? 0) + 12; // breathing room
+  const top = window.scrollY + el.getBoundingClientRect().top - offset;
+
+  window.scrollTo({ top, behavior: "smooth" });
+}
+
+/** Ensure initial / hash loads scroll correctly even when <body> is the scroller. */
+function HashScrollFix() {
+  const handle = useCallback(() => {
+    if (typeof window === "undefined") return;
+    const hash = window.location.hash;
+    if (!hash) return;
+    const id = hash.replace(/^#/, "");
+    // delay to ensure layout is ready
+    setTimeout(() => scrollToId(id), 0);
+  }, []);
+
+  useEffect(() => {
+    // on first paint (e.g., direct load to /#get-started)
+    handle();
+    // respond to hash changes on the same page
+    const onHash = () => handle();
+    window.addEventListener("hashchange", onHash);
+    return () => window.removeEventListener("hashchange", onHash);
+  }, [handle]);
+
+  return null;
+}
+
+/** A nav link that works cross-page and smooth-scrolls when already on the homepage. */
+function NavLink({ id, children, className = "" }) {
+  const href = `/#${id}`;
+
+  const onClick = (e) => {
+    if (typeof window === "undefined") return;
+    // If already on the homepage, intercept and smooth scroll instead of routing
+    if (window.location.pathname === "/") {
+      e.preventDefault();
+      // update the hash in the URL without jumping
+      history.replaceState(null, "", `#${id}`);
+      scrollToId(id);
+    }
+    // If not on the homepage, allow normal navigation to /#id
+  };
+
+  return (
+    <Link href={href} onClick={onClick} className={className}>
+      {children}
+    </Link>
+  );
+}
 
 export default function Header({ variant = "site" }) {
   const [calOpen, setCalOpen] = useState(false);
   const showNav = variant !== "lp";
 
-  // Use pure hash links for same-page anchors
   const NAV = [
-    { label: "Why Optimion", href: "#why-optimion" },
-    { label: "About", href: "#about" },
-    { label: "Process", href: "#process" },
-    { label: "Stats", href: "#stats" },
-    { label: "Integrations", href: "#integrations" },
-    { label: "Testimonials", href: "#testimonials" },
-    { label: "FAQ", href: "#faq" },
-    { label: "Get Started", href: "#get-started" },
+    { label: "Why Optimion", id: "why-optimion" },
+    { label: "About", id: "about" },
+    { label: "Process", id: "process" },
+    { label: "Stats", id: "stats" },
+    { label: "Integrations", id: "integrations" },
+    { label: "Testimonials", id: "testimonials" },
+    { label: "FAQ", id: "faq" },
+    { label: "Get Started", id: "get-started" },
   ];
 
   return (
     <>
+      <HashScrollFix />
+
       <a
         href="#main"
         className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:bg-black focus:text-white focus:px-3 focus:py-2 focus:rounded"
@@ -33,7 +93,7 @@ export default function Header({ variant = "site" }) {
 
       <header className="sticky top-0 z-50 bg-black/40 backdrop-blur-md border-b border-white/10">
         <div className="mx-auto max-w-7xl px-6 md:px-16 h-14 flex items-center justify-between">
-          {/* Brand: simple route back to top/home */}
+          {/* Always goes home; smooth-scroll logic happens in NavLink for section links */}
           <Link href="/" scroll={false} className="font-semibold tracking-tight">
             <span className="bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-500 bg-clip-text text-transparent">
               Optimion
@@ -41,28 +101,12 @@ export default function Header({ variant = "site" }) {
           </Link>
 
           {showNav && (
-            <nav
-              className="hidden md:flex items-center gap-6 text-sm text-gray-300"
-              aria-label="Primary"
-            >
-              {NAV.map((item) =>
-                item.href.startsWith("#") ? (
-                  // Same-page anchor: let the browser handle it
-                  <a key={item.label} href={item.href} className="hover:text-white">
-                    {item.label}
-                  </a>
-                ) : (
-                  // (If you ever add non-hash items, keep Link and disable auto-scroll)
-                  <Link
-                    key={item.label}
-                    href={item.href}
-                    scroll={false}
-                    className="hover:text-white"
-                  >
-                    {item.label}
-                  </Link>
-                )
-              )}
+            <nav className="hidden md:flex items-center gap-6 text-sm text-gray-300" aria-label="Primary">
+              {NAV.map((item) => (
+                <NavLink key={item.id} id={item.id} className="hover:text-white">
+                  {item.label}
+                </NavLink>
+              ))}
             </nav>
           )}
 
