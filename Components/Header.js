@@ -8,17 +8,18 @@ import { CalendarDays } from "lucide-react";
 
 export default function Header({ variant = "site" }) {
   const [calOpen, setCalOpen] = useState(false);
-  const showNav = variant !== "lp"; // keep your LP behavior
+  const showNav = variant !== "lp";
 
+  // Use pure hash links for same-page anchors
   const NAV = [
-    { label: "Why Optimion", href: "/#why-optimion" },
-    { label: "About", href: "/#about" },
-    { label: "Process", href: "/#process" },
-    { label: "Stats", href: "/#stats" },
-    { label: "Integrations", href: "/#integrations" },
-    { label: "Testimonials", href: "/#testimonials" },
-    { label: "FAQ", href: "/#faq" },
-    { label: "Get Started", href: "/#get-started" },
+    { label: "Why Optimion", href: "#why-optimion" },
+    { label: "About", href: "#about" },
+    { label: "Process", href: "#process" },
+    { label: "Stats", href: "#stats" },
+    { label: "Integrations", href: "#integrations" },
+    { label: "Testimonials", href: "#testimonials" },
+    { label: "FAQ", href: "#faq" },
+    { label: "Get Started", href: "#get-started" },
   ];
 
   return (
@@ -32,19 +33,36 @@ export default function Header({ variant = "site" }) {
 
       <header className="sticky top-0 z-50 bg-black/40 backdrop-blur-md border-b border-white/10">
         <div className="mx-auto max-w-7xl px-6 md:px-16 h-14 flex items-center justify-between">
-          <Link href="/#top" className="font-semibold tracking-tight">
+          {/* Brand: simple route back to top/home */}
+          <Link href="/" scroll={false} className="font-semibold tracking-tight">
             <span className="bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-500 bg-clip-text text-transparent">
               Optimion
             </span>
           </Link>
 
           {showNav && (
-            <nav className="hidden md:flex items-center gap-6 text-sm text-gray-300">
-              {NAV.map((i) => (
-                <Link key={i.href} href={i.href} className="hover:text-white">
-                  {i.label}
-                </Link>
-              ))}
+            <nav
+              className="hidden md:flex items-center gap-6 text-sm text-gray-300"
+              aria-label="Primary"
+            >
+              {NAV.map((item) =>
+                item.href.startsWith("#") ? (
+                  // Same-page anchor: let the browser handle it
+                  <a key={item.label} href={item.href} className="hover:text-white">
+                    {item.label}
+                  </a>
+                ) : (
+                  // (If you ever add non-hash items, keep Link and disable auto-scroll)
+                  <Link
+                    key={item.label}
+                    href={item.href}
+                    scroll={false}
+                    className="hover:text-white"
+                  >
+                    {item.label}
+                  </Link>
+                )
+              )}
             </nav>
           )}
 
