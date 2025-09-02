@@ -6,17 +6,28 @@ import Link from "next/link";
 import CalendlyModal from "@/Components/CalendlyModal";
 import { CalendarDays } from "lucide-react";
 
+/** Return the element that actually scrolls the page (works when <body> is the scroller). */
+function getScroller() {
+  if (typeof document === "undefined") return null;
+  return document.scrollingElement || document.documentElement || document.body;
+}
+
 /** Smoothly scroll to an element ID, accounting for sticky header height. */
 function scrollToId(id) {
-  if (!id) return;
+  if (!id || typeof document === "undefined") return;
   const el = document.getElementById(id);
   if (!el) return;
 
   const header = document.querySelector("header");
-  const offset = (header?.getBoundingClientRect().height ?? 0) + 12; // breathing room
-  const top = window.scrollY + el.getBoundingClientRect().top - offset;
+  const offset = (header?.getBoundingClientRect().height ?? 0) + 12;
 
-  window.scrollTo({ top, behavior: "smooth" });
+  const scroller = getScroller();
+  const currentTop =
+    (scroller?.scrollTop ?? window.scrollY ?? 0) + el.getBoundingClientRect().top;
+
+  const top = currentTop - offset;
+  if (scroller?.scrollTo) scroller.scrollTo({ top, behavior: "smooth" });
+  else window.scrollTo({ top, behavior: "smooth" });
 }
 
 /** Ensure initial / hash loads scroll correctly even when <body> is the scroller. */
@@ -26,7 +37,7 @@ function HashScrollFix() {
     const hash = window.location.hash;
     if (!hash) return;
     const id = hash.replace(/^#/, "");
-    // delay to ensure layout is ready
+    // wait one tick so layout is ready
     setTimeout(() => scrollToId(id), 0);
   }, []);
 
@@ -48,18 +59,19 @@ function NavLink({ id, children, className = "" }) {
 
   const onClick = (e) => {
     if (typeof window === "undefined") return;
-    // If already on the homepage, intercept and smooth scroll instead of routing
+    // If already on the homepage, intercept and smooth-scroll instead of routing.
     if (window.location.pathname === "/") {
       e.preventDefault();
-      // update the hash in the URL without jumping
+      // update the hash without a jump, then smooth scroll
       history.replaceState(null, "", `#${id}`);
       scrollToId(id);
     }
-    // If not on the homepage, allow normal navigation to /#id
+    // If not on the homepage, let Next.js navigate to /#id;
+    // HashScrollFix will perform the final offset scroll on load.
   };
 
   return (
-    <Link href={href} onClick={onClick} className={className}>
+    <Link href={href} scroll={false} onClick={onClick} className={className}>
       {children}
     </Link>
   );
@@ -93,7 +105,7 @@ export default function Header({ variant = "site" }) {
 
       <header className="sticky top-0 z-50 bg-black/40 backdrop-blur-md border-b border-white/10">
         <div className="mx-auto max-w-7xl px-6 md:px-16 h-14 flex items-center justify-between">
-          {/* Always goes home; smooth-scroll logic happens in NavLink for section links */}
+          {/* Always routes home; section links smooth-scroll via NavLink */}
           <Link href="/" scroll={false} className="font-semibold tracking-tight">
             <span className="bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-500 bg-clip-text text-transparent">
               Optimion
