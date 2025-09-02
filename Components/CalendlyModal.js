@@ -2,24 +2,24 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { createPortal } from "react-dom";
 
 /**
- * Stylized Calendly modal (glass look preserved) + no white background flash.
+ * A stylized modal that hosts Calendly's inline widget.
+ * Fix: ensure no white background ever shows behind the blur.
  */
 export default function CalendlyModal({
   open,
   onClose,
   url,
   colors = {
-    background: "#0b0b0d",
-    text: "#e5e7eb",
-    primary: "#22d3ee",
+    background: "#0b0b0d", // page background inside iframe
+    text: "#e5e7eb",       // text color
+    primary: "#22d3ee",    // accent (buttons/links)
   },
 }) {
   const containerRef = useRef(null);
 
-  // Dark themed Calendly URL
+  // Build a URL with Calendly color params
   const themedUrl = (() => {
     const params = new URLSearchParams({
       background_color: stripHash(colors.background),
@@ -33,11 +33,7 @@ export default function CalendlyModal({
   useEffect(() => {
     if (!open) return;
 
-    // Lock page scroll
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-
-    // Calendly CSS
+    // Ensure Calendly CSS
     if (!document.getElementById("calendly-widget-css")) {
       const link = document.createElement("link");
       link.id = "calendly-widget-css";
@@ -46,9 +42,10 @@ export default function CalendlyModal({
       document.head.appendChild(link);
     }
 
-    // Init inline widget
+    // Ensure Calendly script, then init inline widget
     const initInline = () => {
       if (!containerRef.current) return;
+      // Clear any previous iframe
       containerRef.current.innerHTML = "";
       window.Calendly?.initInlineWidget?.({
         url: themedUrl,
@@ -71,39 +68,36 @@ export default function CalendlyModal({
     }
 
     return () => {
-      document.body.style.overflow = prev;
+      // Optional cleanup: remove iframe contents
       if (containerRef.current) containerRef.current.innerHTML = "";
     };
   }, [open, themedUrl]);
 
   if (!open) return null;
 
-  // Portal to <body> with a solid dark base + blurred overlay (prevents any white)
-  return createPortal(
+  return (
     <div
-      className="fixed inset-0 z-[1000]"
+      className="fixed inset-0 z-[1000] isolate" /* isolate = keep blur sampling our own dark base */
       aria-modal="true"
       role="dialog"
-      // hard fallback base in case classes haven't painted yet
-      style={{ backgroundColor: "rgba(11,11,13,0.92)" }}
     >
-      {/* Darkened/blurred overlay */}
-      <div
-        onClick={onClose}
+      {/* 1) Solid dark base under everything so blur never samples white */}
+      <div className="absolute inset-0 bg-[#0b0b0d]/90 pointer-events-none" />
+
+      {/* 2) Your blurred overlay (unchanged interaction) */}
+      <button
         aria-label="Close"
+        onClick={onClose}
         className="absolute inset-0 bg-black/65 backdrop-blur-sm"
       />
 
-      {/* Centered glass shell (your original look) */}
+      {/* 3) Modal shell (unchanged look) */}
       <div className="absolute inset-0 flex items-center justify-center p-4">
         <div
           className="relative w-full max-w-[960px] h-[82vh] rounded-2xl border border-white/10 bg-neutral-950/90 shadow-2xl overflow-hidden
                      before:absolute before:inset-0 before:pointer-events-none
                      before:bg-[radial-gradient(80%_50%_at_50%_0%,rgba(34,211,238,.12),rgba(139,92,246,.08)_45%,rgba(236,72,153,.06)_70%,transparent_80%)]"
         >
-          {/* extra dark underlay behind the iframe to kill any load flash */}
-          <div className="absolute inset-0 bg-[#0b0b0d]" aria-hidden />
-
           {/* Close button */}
           <button
             onClick={onClose}
@@ -115,12 +109,11 @@ export default function CalendlyModal({
             ✕
           </button>
 
-          {/* Calendly inline container (sits above the dark underlay) */}
-          <div ref={containerRef} className="relative w-full h-full" />
+          {/* Calendly inline container */}
+          <div ref={containerRef} className="w-full h-full" />
         </div>
       </div>
-    </div>,
-    document.body
+    </div>
   );
 }
 
