@@ -84,3 +84,16 @@ img, svg, canvas, video {
     display: none !important;
   }
 }
+/* ===== Kill accidental inner scrollbars (desktop & mobile) ===== */
+html, body { overflow-x: hidden; }
+
+/* Never let sections or the main wrapper create their own y-scrollbars */
+#main,
+#main > section,
+.section-fade {
+  overflow-y: visible !important;
+}
+
+/* Some browsers can give inline SVGs their own scrollbars when filters extend;
+   keep SVGs paint-through instead of scrollable. */
+svg { overflow: visible; }
