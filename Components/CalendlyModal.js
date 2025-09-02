@@ -5,26 +5,22 @@ import { useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 
 /**
- * A stylized modal that hosts Calendly's inline widget.
- * Props:
- *  - open: boolean
- *  - onClose: () => void
- *  - url: Calendly event URL (e.g., "https://calendly.com/ivan-optimion/30min")
- *  - colors?: { background?: string, text?: string, primary?: string }
+ * Stylized Calendly modal (glass look preserved).
+ * Fix: ensure no white background shows behind the blur while open.
  */
 export default function CalendlyModal({
   open,
   onClose,
   url,
   colors = {
-    background: "#0b0b0d", // page background inside iframe
-    text: "#e5e7eb",       // text color
-    primary: "#22d3ee",    // accent (buttons/links)
+    background: "#0b0b0d",
+    text: "#e5e7eb",
+    primary: "#22d3ee",
   },
 }) {
   const containerRef = useRef(null);
 
-  // Build a URL with Calendly color params
+  // Build a URL with Calendly color params (dark inside iframe)
   const themedUrl = (() => {
     const params = new URLSearchParams({
       background_color: stripHash(colors.background),
@@ -35,14 +31,14 @@ export default function CalendlyModal({
     return `${url}${url.includes("?") ? "&" : "?"}${params.toString()}`;
   })();
 
-  // Load Calendly widget + CSS, then init inline widget
   useEffect(() => {
     if (!open) return;
 
-    // lock body scroll while open (prevents odd paints / double scrollbars)
-    const prevOverflow = document.body.style.overflow;
+    // lock page scroll (prevents page scrollbar + any paint glitches)
+    const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
 
+    // ensure Calendly CSS
     if (!document.getElementById("calendly-widget-css")) {
       const link = document.createElement("link");
       link.id = "calendly-widget-css";
@@ -51,9 +47,10 @@ export default function CalendlyModal({
       document.head.appendChild(link);
     }
 
+    // init inline widget into our container
     const initInline = () => {
       if (!containerRef.current) return;
-      containerRef.current.innerHTML = ""; // Clear any previous iframe
+      containerRef.current.innerHTML = "";
       window.Calendly?.initInlineWidget?.({
         url: themedUrl,
         parentElement: containerRef.current,
@@ -75,24 +72,28 @@ export default function CalendlyModal({
     }
 
     return () => {
-      document.body.style.overflow = prevOverflow;
+      document.body.style.overflow = prev;
       if (containerRef.current) containerRef.current.innerHTML = "";
     };
   }, [open, themedUrl]);
 
   if (!open) return null;
 
-  // Render at the body root to avoid any ancestor stacking-context issues
+  // Render at body root; add a dark base on the wrapper to avoid any white flash
   return createPortal(
-    <div className="fixed inset-0 z-[1000]" aria-modal="true" role="dialog">
-      {/* Backdrop (div, not button) */}
+    <div
+      className="fixed inset-0 z-[1000] bg-[#0b0b0d]/80"   // ← dark base layer
+      aria-modal="true"
+      role="dialog"
+    >
+      {/* Backdrop (click to close) */}
       <div
         onClick={onClose}
         aria-label="Close"
         className="absolute inset-0 bg-black/65 backdrop-blur-sm"
       />
 
-      {/* Modal shell (unchanged look) */}
+      {/* Glass shell (unchanged look) */}
       <div className="absolute inset-0 flex items-center justify-center p-4">
         <div
           className="relative w-full max-w-[960px] h-[82vh] rounded-2xl border border-white/10 bg-neutral-950/90 shadow-2xl overflow-hidden
