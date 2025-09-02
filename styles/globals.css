@@ -90,6 +90,28 @@ html, body { overflow-x: hidden; }
    keep SVGs paint-through instead of scrollable. */
 svg { overflow: visible; }
 
+/* ---------- One-true scroller on desktop (remove phantom extra bar) ---------- */
+/* Make BODY the only scroll container on desktop; ensure wrappers expand instead of scrolling */
+@media (min-width: 768px) {
+  html { overflow-y: visible !important; }        /* html does not scroll */
+  body { overflow-y: auto !important; }           /* page scrolls here */
+
+  #__next,
+  main,
+  #main {
+    overflow-y: visible !important;
+    height: auto !important;
+    max-height: none !important;
+  }
+
+  /* Guard: if some third-party wrapper div gets overflow, neutralize it */
+  body > div:not(#__next) {
+    overflow-y: visible !important;
+    height: auto !important;
+    max-height: none !important;
+  }
+}
+
 /* Gradient text utility (unchanged) */
 .gradient-text{
   background-image: linear-gradient(to bottom, #999, #fff);
