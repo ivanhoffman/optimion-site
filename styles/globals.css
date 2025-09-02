@@ -148,6 +148,7 @@ svg { overflow: visible; }
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
+
 /* ===== Calendly overrides ===== */
 .calendly-modal { isolation: isolate; }
 .calendly-host { background: #0b0b0d; }
