@@ -9,9 +9,8 @@ import CalendlyModal from "@/Components/CalendlyModal";
 /**
  * Per-chip controls:
  *  - angle: degrees around the circle (0=top, 90=right, 180=bottom, 270=left)
- *  - radius: absolute distance from center (optional)
  *  - rFromRing: distance from the animated ring (overrides radius if present)
- *  - dx/dy: screen-space nudges (px). Negative dx = left, negative dy = up.
+ *  - dx/dy: pixel nudges
  *  - outward: push along the angle’s normal (positive = farther from center)
  *  - anchor: "auto" | "left" | "right" | "top" | "bottom" | "center"
  */
@@ -49,7 +48,6 @@ function HeroVisual() {
         case "top": return "translate(-50%, -100%)";
         case "bottom": return "translate(-50%, 0)";
         case "center": return "translate(-50%, -50%)";
-        default: break;
       }
     }
     const cos = Math.cos(a), sin = Math.sin(a);
@@ -62,7 +60,7 @@ function HeroVisual() {
 
   // Build chip positions (no clamping — your dx/dy are literal)
   const chips = CHIPS.map((c, i) => {
-    const baseR = c.rFromRing !== undefined ? R_RING + c.rFromRing : (c.radius ?? R_DEFAULT);
+    const baseR = c.rFromRing !== undefined ? R_RING + c.rFromRing : R_DEFAULT;
     const { x: px, y: py, a } = toXY(c.angle, baseR);
     const out = c.outward ?? 0;
 
@@ -85,8 +83,12 @@ function HeroVisual() {
       {/* DISC + NETWORK (bottom layer) */}
       <div className="absolute inset-0 rounded-full overflow-hidden opacity-90 z-0">
         <svg
-          width="100%" height="100%" viewBox={`0 0 ${SIZE} ${SIZE}`}
-          xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Animated system network"
+          width="100%"
+          height="100%"
+          viewBox={`0 0 ${SIZE} ${SIZE}`}
+          xmlns="http://www.w3.org/2000/svg"
+          role="img"
+          aria-label="Animated system network"
         >
           <defs>
             <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
@@ -104,7 +106,16 @@ function HeroVisual() {
           <circle cx={cx} cy={cy} r={R_DISC} fill="url(#disc)" />
 
           {/* Orbit ring */}
-          <circle cx={cx} cy={cy} r={R_RING} fill="none" stroke="url(#g1)" strokeWidth="2" strokeLinecap="round" className="orbit" />
+          <circle
+            cx={cx}
+            cy={cy}
+            r={R_RING}
+            fill="none"
+            stroke="url(#g1)"
+            strokeWidth="2"
+            strokeLinecap="round"
+            className="orbit"
+          />
 
           {/* Connections */}
           <g stroke="url(#g1)" strokeWidth="2" strokeLinecap="round" fill="none" opacity="0.9">
@@ -169,13 +180,17 @@ export default function HeroSection() {
   const [showCal, setShowCal] = useState(false);
 
   return (
-    <section id="hero" className="section-fade relative min-h-screen text-white flex items-center justify-between px-6 md:px-16 overflow-visible">
+    // Hide overflow on small screens to prevent any stray horizontal scroll.
+    <section
+      id="hero"
+      className="section-fade relative min-h-screen text-white flex items-center md:justify-between px-6 md:px-16 overflow-hidden md:overflow-visible"
+    >
       <div className="max-w-2xl z-10">
         <motion.h1
-          initial={{opacity:0,x:-50}}
-          whileInView={{opacity:1,x:0}}
-          transition={{duration:.8}}
-          viewport={{once:true}}
+          initial={{ opacity: 0, x: -50 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.8 }}
+          viewport={{ once: true }}
           className="mb-4"
         >
           <span className="text-4xl md:text-5xl font-medium leading-tight text-transparent bg-clip-text gradient-text antialiased">
@@ -184,32 +199,33 @@ export default function HeroSection() {
         </motion.h1>
 
         <motion.h2
-          initial={{opacity:0,x:-50}}
-          whileInView={{opacity:1,x:0}}
-          transition={{delay:.2,duration:.8}}
-          viewport={{once:true}}
+          initial={{ opacity: 0, x: -50 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.2, duration: 0.8 }}
+          viewport={{ once: true }}
           className="text-5xl font-extrabold mb-4 bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-500 text-transparent bg-clip-text"
         >
           Optimion System
         </motion.h2>
 
         <motion.p
-          initial={{opacity:0,x:-50}}
-          whileInView={{opacity:1,x:0}}
-          transition={{delay:.4,duration:.8}}
-          viewport={{once:true}}
+          initial={{ opacity: 0, x: -50 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.4, duration: 0.8 }}
+          viewport={{ once: true }}
           className="text-gray-300 text-lg max-w-lg mb-6"
         >
-          We build custom CRMs, powerful automations, and optimized workflows for any business. Eliminate bottlenecks. Unlock growth.
+          We build custom CRMs, powerful automations, and optimized workflows for any business.
+          Eliminate bottlenecks. Unlock growth.
         </motion.p>
 
         <motion.button
           type="button"
           onClick={() => setShowCal(true)}
-          initial={{opacity:0,y:20}}
-          whileInView={{opacity:1,y:0}}
-          transition={{delay:.6,duration:.6}}
-          viewport={{once:true}}
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6, duration: 0.6 }}
+          viewport={{ once: true }}
           className="group inline-flex items-center gap-2 px-5 py-3 bg-neutral-900 hover:bg-neutral-800 text-white border border-neutral-700 rounded-md text-sm transition-colors"
         >
           Book a Free Call
@@ -217,8 +233,8 @@ export default function HeroSection() {
         </motion.button>
       </div>
 
-      {/* RIGHT VISUAL */}
-      <div className="absolute right-0 top-0 bottom-0 w-full md:w-1/2 flex items-center justify-center">
+      {/* RIGHT VISUAL — hidden on mobile */}
+      <div className="absolute right-0 top-0 bottom-0 w-1/2 items-center justify-center hidden md:flex">
         <HeroVisual />
       </div>
 
@@ -230,7 +246,7 @@ export default function HeroSection() {
         colors={{
           background: "#0b0b0d",
           text: "#e5e7eb",
-          primary: "#22d3ee", // try "#8b5cf6" or "#ec4899" to match your gradient accents
+          primary: "#22d3ee",
         }}
       />
     </section>

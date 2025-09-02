@@ -4,28 +4,22 @@
 import React, { useId, useState } from "react";
 import { motion } from "framer-motion";
 import { CheckCircle } from "lucide-react";
-import CalendlyModal from "@/Components/CalendlyModal"; // ← added
+import CalendlyModal from "@/Components/CalendlyModal";
 
 /**
  * Flowchart with guaranteed-visible stems + wrapped diamond labels +
  * card reveal + thin traveling glow under crisp lines.
  */
-
 export default function AboutSection() {
-  // Calendly modal state (local to this section)
   const [calOpen, setCalOpen] = useState(false);
 
   return (
     <section
       id="about"
-      className="section-fade relative min-h-screen flex flex-col-reverse md:flex-row items-center justify-between px-6 md:px-16 py-24 overflow-hidden md:overflow-visible text-white"
+      className="section-fade relative min-h-screen flex flex-col-reverse md:flex-row items-center justify-between px-6 md:px-16 py-24 overflow-visible text-white"
     >
-      {/* LEFT: Flowchart (hidden on mobile) */}
-      <div
-        id="process-flowchart"
-        className="hidden md:flex md:w-1/2 justify-center items-center"
-        aria-hidden="true"
-      >
+      {/* LEFT: Flowchart — hidden on mobile */}
+      <div className="hidden md:flex w-full md:w-1/2 justify-center items-center">
         <Flowchart />
       </div>
 
@@ -37,8 +31,8 @@ export default function AboutSection() {
         </h2>
 
         <p className="text-gray-300 text-lg mb-6">
-          We build flows that recover lost sales, automate follow-ups, and keep
-          your funnel working 24/7 — so you don’t have to.
+          We build flows that recover lost sales, automate follow-ups, and keep your funnel
+          working 24/7 — so you don’t have to.
         </p>
 
         <ul className="space-y-3 mb-6">
@@ -81,7 +75,7 @@ export default function AboutSection() {
       {/* Calendly Modal (kept inside section for locality) */}
       <CalendlyModal
         open={calOpen}
-        isOpen={calOpen} // support either prop name if used elsewhere
+        isOpen={calOpen}
         onClose={() => setCalOpen(false)}
         url="https://calendly.com/ivan-optimion/30min"
         colors={{
@@ -108,9 +102,9 @@ function Flowchart() {
   const STROKE = { width: 2.25 };
   const ARROW = { tipH: 8, tipW: 6, stemPad: 8 };
 
-  // GLOBAL diamond title nudges (adjust here to move ALL diamond titles)
-  const DIAMOND_TITLE_DEFAULT_DX = 0; // left/right (+right, -left)
-  const DIAMOND_TITLE_DEFAULT_DY = 3; // up/down (+down, -up)
+  // GLOBAL diamond title nudges
+  const DIAMOND_TITLE_DEFAULT_DX = 0;
+  const DIAMOND_TITLE_DEFAULT_DY = 3;
 
   const toXY = (c, r) => ({
     x: BOARD.pad + c * GRID.colW + GRID.colW / 2,
@@ -122,34 +116,94 @@ function Flowchart() {
     N("start", "rect", 1, 0, "Start / Triggers", "Form • Cart • Webhook"),
     N("cap", "rect", 1, 1, "Capture Event", "Normalize fields"),
     N("enrich", "rect", 1, 2, "Enrich & De-dupe", "Verify • Merge"),
-    N("known", "diamond", 1, 3, "Known in CRM?", "", { titleLines: ["Known","in","CRM?"], titleDy: 3 }),
+
+    // Force 3 lines + nudge down slightly
+    N("known", "diamond", 1, 3, "Known in CRM?", "", {
+      titleLines: ["Known", "in", "CRM?"],
+      titleDy: 3,
+    }),
+
     N("update", "rect", 0, 4, "Update CRM Record", "Advance stage"),
     N("seg", "rect", 2, 4, "Segment & Score", "Hot • Warm • Nurture"),
+
     N("win", "rect", 0, 5, "Winback / Loyalty", "Email • SMS"),
     N("cad", "rect", 2, 5, "Cadence", "Email → SMS → Wait"),
-    N("hiQ", "diamond", 0, 6, "High intent?", "", { dy: -10, titleLines: ["High","intent?"] }),
+
+    // Force 2 lines
+    N("hiQ", "diamond", 0, 6, "High intent?", "", { dy: -10, titleLines: ["High", "intent?"] }),
     N("intent", "diamond", 2, 6, "Intent check?", "", { dy: -10 }),
+
     N("bookL", "rect", 0, 7, "Booked / Checkout", "Calendar / Pay", { w: 188, dx: -50, dy: 20 }),
-    N("esc", "rect", 1, 7, "Escalate", "Call task", { w: 188, dx: -68, dy: 20 }),
+    N("esc",   "rect", 1, 7, "Escalate", "Call task", { w: 188, dx: -68, dy: 20 }),
     N("bookR", "rect", 2, 7, "Booked / Checkout", "Calendar / Pay", { w: 186, dx: -110, dy: 20 }),
-    N("recy", "rect", 2, 7, "Recycle", "Retarget • Retry", { w: 170, dx: 70, dy: 20 }),
+    N("recy",  "rect", 2, 7, "Recycle", "Retarget • Retry", { w: 170, dx: 70, dy: 20 }),
+
     N("crm", "rect", 1, 8, "CRM Update & Notify", "Create/Update • Slack", { w: 238, dy: 30 }),
   ];
 
   /* ------------------------- EDGES ------------------------- */
   const edges = [
-    E("start", "cap"), E("cap", "enrich"), E("enrich", "known"),
-    E("known", "update", "vh", { label:"YES", labelAt:0.22, labelDx:-10, labelDy:-8, bendY: toXY(0,4).y - 92/2 + 6 }),
-    E("known", "seg",    "vh", { label:"NO",  labelAt:0.78,              labelDy:-8, bendY: toXY(2,4).y - 92/2 + 6 }),
-    E("update", "win"), E("seg", "cad"),
-    E("win", "hiQ", "vh",   { label:"YES", labelAt:0.14, labelDx:-14, labelDy:-8, bendY: toXY(0,7).y - 92/2 - 10 }),
-    E("win", "esc", "vh",   { label:"NO",  labelAt:0.86,               labelDy:-8, bendY: toXY(1,7).y - 92/2 - 10 }),
-    E("intent", "bookR","vh",{ label:"YES", labelAt:0.16, labelDx:-14, labelDy:-8, bendY: toXY(2,7).y - 92/2 - 10 }),
-    E("intent", "recy","vh",{ label:"NO",  labelAt:0.80,               labelDy:-8, bendY: toXY(2,7).y - 92/2 - 10 }),
-    E("bookL","crm","vh",{ bend:"collector" }),
-    E("esc","crm","vh",{ bend:"collector" }),
-    E("bookR","crm","vh",{ bend:"collector" }),
-    E("recy","crm","vh",{ bend:"collector" }),
+    // same-column chains
+    E("start", "cap"),
+    E("cap", "enrich"),
+    E("enrich", "known"),
+
+    // Decision → left/right (elbows)
+    E("known", "update", "vh", {
+      label: "YES",
+      labelAt: 0.22,
+      labelDx: -10,
+      labelDy: -8,
+      bendY: toXY(0, 4).y - GRID.rowH / 2 + 6,
+    }),
+    E("known", "seg", "vh", {
+      label: "NO",
+      labelAt: 0.78,
+      labelDy: -8,
+      bendY: toXY(2, 4).y - GRID.rowH / 2 + 6,
+    }),
+
+    // middle same-column
+    E("update", "win"),
+    E("seg", "cad"),
+
+    // lower decisions
+    E("win", "hiQ"),
+    E("cad", "intent"),
+
+    // decisions → outcomes (elbows)
+    E("hiQ", "bookL", "vh", {
+      label: "YES",
+      labelAt: 0.14,
+      labelDx: -14,
+      labelDy: -8,
+      bendY: toXY(0, 7).y - GRID.rowH / 2 - 10,
+    }),
+    E("hiQ", "esc", "vh", {
+      label: "NO",
+      labelAt: 0.86,
+      labelDy: -8,
+      bendY: toXY(1, 7).y - GRID.rowH / 2 - 10,
+    }),
+    E("intent", "bookR", "vh", {
+      label: "YES",
+      labelAt: 0.16,
+      labelDx: -14,
+      labelDy: -8,
+      bendY: toXY(2, 7).y - GRID.rowH / 2 - 10,
+    }),
+    E("intent", "recy", "vh", {
+      label: "NO",
+      labelAt: 0.80,
+      labelDy: -8,
+      bendY: toXY(2, 7).y - GRID.rowH / 2 - 10,
+    }),
+
+    // collector
+    E("bookL", "crm", "vh", { bend: "collector" }),
+    E("esc",   "crm", "vh", { bend: "collector" }),
+    E("bookR", "crm", "vh", { bend: "collector" }),
+    E("recy",  "crm", "vh", { bend: "collector" }),
   ];
 
   /* ------------------------------- BUILD ------------------------------ */
@@ -171,14 +225,14 @@ function Flowchart() {
   );
 
   const bottomOf = (n) => ({ x: n.x, y: n.y + n.h / 2 });
-  const topOf = (n) => ({ x: n.x, y: n.y - n.h / 2 });
-  const rightOf = (n) => ({ x: n.x + n.w / 2, y: n.y });
+  const topOf    = (n) => ({ x: n.x, y: n.y - n.h / 2 });
+  const rightOf  = (n) => ({ x: n.x + n.w / 2, y: n.y });
 
   const pathVH = (s, t, bendY) => {
     const A = bottomOf(s);
     const B = topOf(t);
     const y = bendY ?? (s.y + t.y) / 2;
-    const endY = B.y - 8;
+    const endY = B.y - ARROW.stemPad;
     return { d: `M ${A.x} ${A.y} L ${A.x} ${y} L ${B.x} ${y} L ${B.x} ${endY}`, end: { x: B.x, y: B.y } };
   };
 
@@ -187,7 +241,7 @@ function Flowchart() {
     const B = topOf(t);
     const y = bendY ?? (s.y + t.y) / 2;
     const midX = (A.x + B.x) / 2;
-    const endY = B.y - 8;
+    const endY = B.y - ARROW.stemPad;
     return {
       d: `M ${A.x} ${A.y} L ${midX} ${A.y} L ${midX} ${y} L ${B.x} ${y} L ${B.x} ${endY}`,
       end: { x: B.x, y: B.y },
@@ -263,42 +317,17 @@ function Flowchart() {
           strokeWidth={BOARD.strokeW}
         />
 
-        {/* Nodes first (card reveal) */}
-        {Object.values(byId).map((n, i) => (
-          <motion.g
-            key={n.id}
-            initial={{ opacity: 0, scale: 0.96 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.35, delay: 0.14 + i * 0.03, ease: "easeOut" }}
-            viewport={{ once: true }}
-            className="card-pop"
-          >
-            {n.type === "diamond" ? (
-              <Diamond cx={n.x} cy={n.y} s={n.w} />
-            ) : (
-              <Rounded x={n.x - n.w / 2} y={n.y - n.h / 2} w={n.w} h={n.h} r={NODE.radius} />
-            )}
-            <TextBlock
-              node={n}
-              isDiamond={n.type === "diamond"}
-              defaultDx={DIAMOND_TITLE_DEFAULT_DX}
-              defaultDy={DIAMOND_TITLE_DEFAULT_DY}
-            />
-          </motion.g>
-        ))}
-
-        {/* CONNECTORS — VERTICAL STEMS (glow first, then crisp) */}
+        {/* --- CONNECTORS FIRST (behind nodes) --- */}
+        {/* Vertical stems (glow under, crisp on top) */}
         <g fill={`url(#${gradId})`} stroke="none" pointerEvents="none">
           {edges.map((e, i) => {
-            const s = byId[e.from],
-              t = byId[e.to];
+            const s = byId[e.from], t = byId[e.to];
             const sameX = Math.abs(s.x - t.x) < 0.001;
             if (!sameX) return null;
 
             const A = bottomOf(s);
             const B = topOf(t);
-            const y1 = A.y,
-              y2 = B.y - 8;
+            const y1 = A.y, y2 = B.y - ARROW.stemPad;
             const h = Math.max(0, y2 - y1);
             const w = STROKE.width;
             const x0 = s.x - w / 2;
@@ -334,14 +363,14 @@ function Flowchart() {
                   transition={{ delay: 0.38 + i * 0.05 }}
                   viewport={{ once: true }}
                 >
-                  <ArrowTip x={B.x} y={B.y} gradId={gradId} />
+                  <ArrowTip x={B.x} y={B.y} gradId={gradId} cfg={ARROW} />
                 </motion.g>
               </g>
             );
           })}
         </g>
 
-        {/* ELBOWED EDGES (glow first, then crisp) */}
+        {/* Elbowed edges (glow under, crisp on top) */}
         <g
           fill="none"
           stroke={`url(#${gradId})`}
@@ -352,8 +381,7 @@ function Flowchart() {
           pointerEvents="none"
         >
           {edges.map((e, i) => {
-            const s = byId[e.from],
-              t = byId[e.to];
+            const s = byId[e.from], t = byId[e.to];
             if (Math.abs(s.x - t.x) < 0.001) return null; // handled above
 
             const bendY = e.meta?.bend === "collector" ? collectorY : e.meta?.bendY;
@@ -377,30 +405,49 @@ function Flowchart() {
                   transition={{ delay: 0.38 + i * 0.06 }}
                   viewport={{ once: true }}
                 >
-                  <ArrowTip x={seg.end.x} y={seg.end.y} gradId={gradId} />
+                  <ArrowTip x={seg.end.x} y={seg.end.y} gradId={gradId} cfg={ARROW} />
                 </motion.g>
               </g>
             );
           })}
         </g>
 
+        {/* --- NODES ON TOP (no lines over shapes) --- */}
+        {Object.values(byId).map((n, i) => (
+          <motion.g
+            key={n.id}
+            initial={{ opacity: 0, scale: 0.96 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.35, delay: 0.14 + i * 0.03, ease: "easeOut" }}
+            viewport={{ once: true }}
+            className="card-pop"
+          >
+            {n.type === "diamond" ? (
+              <Diamond cx={n.x} cy={n.y} s={n.w} />
+            ) : (
+              <Rounded x={n.x - n.w / 2} y={n.y - n.h / 2} w={n.w} h={n.h} r={NODE.radius} />
+            )}
+            <TextBlock
+              node={n}
+              isDiamond={n.type === "diamond"}
+              defaultDx={DIAMOND_TITLE_DEFAULT_DX}
+              defaultDy={DIAMOND_TITLE_DEFAULT_DY}
+            />
+          </motion.g>
+        ))}
+
         {/* Edge labels */}
         <g fontSize="11" fill="#cbd5e1" textAnchor="middle" pointerEvents="none">
           {edges
             .filter((e) => e.meta?.label)
             .map((e, i) => {
-              const s = byId[e.from],
-                t = byId[e.to];
+              const s = byId[e.from], t = byId[e.to];
               const at = typeof e.meta.labelAt === "number" ? e.meta.labelAt : 0.5;
               const yRef =
                 e.meta?.bend === "collector" ? collectorY : e.meta?.bendY ?? (s.y + t.y) / 2;
               const x = s.x + (t.x - s.x) * at + (e.meta?.labelDx ?? 0);
               const y = yRef + (e.meta?.labelDy ?? -8);
-              return (
-                <text key={`lbl-${i}`} x={x} y={y}>
-                  {e.meta.label}
-                </text>
-              );
+              return <text key={`lbl-${i}`} x={x} y={y}>{e.meta.label}</text>;
             })}
         </g>
       </svg>
@@ -409,7 +456,6 @@ function Flowchart() {
 }
 
 /* ------------------------------ HELPERS ------------------------------ */
-
 function N(id, type, col, row, title, sub = "", opts = {}) {
   return { id, type, col, row, title, sub, opts };
 }
@@ -467,10 +513,7 @@ function wrapDiamond(text, maxChars = 12, maxLines = 2) {
   return lines;
 }
 
-/**
- * Text inside nodes
- * - Diamonds: supports per-node titleDx/titleDy + global defaults
- */
+/** Text inside nodes */
 function TextBlock({ node, isDiamond, defaultDx = 0, defaultDy = 0 }) {
   if (isDiamond) {
     const lines = node.opts?.titleLines ?? wrapDiamond(node.title, 12, 2);
@@ -478,13 +521,8 @@ function TextBlock({ node, isDiamond, defaultDx = 0, defaultDy = 0 }) {
     // Size/line-height tuning based on line count
     let fs = 12;
     let lh = 12;
-    if (lines.length === 3) {
-      fs = 10;
-      lh = 11;
-    } else if (lines.length === 2) {
-      fs = 11.5;
-      lh = 12;
-    }
+    if (lines.length === 3)      { fs = 10;   lh = 11; }
+    else if (lines.length === 2) { fs = 11.5; lh = 12; }
 
     const totalH = lh * (lines.length - 1);
 
@@ -498,14 +536,7 @@ function TextBlock({ node, isDiamond, defaultDx = 0, defaultDy = 0 }) {
     return (
       <g textAnchor="middle" pointerEvents="none">
         {lines.map((ln, i) => (
-          <text
-            key={i}
-            x={node.x + titleDx}
-            y={y0 + i * lh}
-            fontSize={fs}
-            fontWeight={600}
-            fill="#e5e7eb"
-          >
+          <text key={i} x={node.x + titleDx} y={y0 + i * lh} fontSize={fs} fontWeight={600} fill="#e5e7eb">
             {ln}
           </text>
         ))}
@@ -539,8 +570,8 @@ function TextBlock({ node, isDiamond, defaultDx = 0, defaultDy = 0 }) {
 }
 
 /** Manual arrow tip (downward) */
-function ArrowTip({ x, y, gradId }) {
-  const tipH = 8, tipW = 6;
+function ArrowTip({ x, y, gradId, cfg }) {
+  const { tipH, tipW } = cfg;
   const d = `M ${x - tipW} ${y - tipH} L ${x + tipW} ${y - tipH} L ${x} ${y} Z`;
   return <path d={d} fill={`url(#${gradId})`} opacity="0.98" />;
 }
