@@ -5,7 +5,7 @@ import { useEffect, useRef } from "react";
 
 /**
  * A stylized modal that hosts Calendly's inline widget.
- * Fix: ensure no white background ever shows behind the blur.
+ * (UI unchanged — fix ensures no white background shows behind the blur.)
  */
 export default function CalendlyModal({
   open,
@@ -32,6 +32,16 @@ export default function CalendlyModal({
 
   useEffect(() => {
     if (!open) return;
+
+    // --- FIX: make sure the backdrop blur doesn't sample a white HTML bg
+    const html = document.documentElement;
+    const prevHtmlBg = html.style.backgroundColor;
+    const prevHtmlOverflow = html.style.overflow;
+    const prevBodyOverflow = document.body.style.overflow;
+
+    html.style.backgroundColor = "#000"; // key: stop white fallback
+    html.style.overflow = "hidden";      // prevent page scrollbar flash
+    document.body.style.overflow = "hidden";
 
     // Ensure Calendly CSS
     if (!document.getElementById("calendly-widget-css")) {
@@ -68,6 +78,11 @@ export default function CalendlyModal({
     }
 
     return () => {
+      // Restore scroll + background exactly as before
+      html.style.backgroundColor = prevHtmlBg;
+      html.style.overflow = prevHtmlOverflow;
+      document.body.style.overflow = prevBodyOverflow;
+
       // Optional cleanup: remove iframe contents
       if (containerRef.current) containerRef.current.innerHTML = "";
     };
@@ -77,21 +92,18 @@ export default function CalendlyModal({
 
   return (
     <div
-      className="fixed inset-0 z-[1000] isolate" /* isolate = keep blur sampling our own dark base */
+      className="fixed inset-0 z-[1000]"
       aria-modal="true"
       role="dialog"
     >
-      {/* 1) Solid dark base under everything so blur never samples white */}
-      <div className="absolute inset-0 bg-[#0b0b0d]/90 pointer-events-none" />
-
-      {/* 2) Your blurred overlay (unchanged interaction) */}
+      {/* Backdrop (glass + blur preserved) */}
       <button
         aria-label="Close"
         onClick={onClose}
         className="absolute inset-0 bg-black/65 backdrop-blur-sm"
       />
 
-      {/* 3) Modal shell (unchanged look) */}
+      {/* Modal shell (unchanged) */}
       <div className="absolute inset-0 flex items-center justify-center p-4">
         <div
           className="relative w-full max-w-[960px] h-[82vh] rounded-2xl border border-white/10 bg-neutral-950/90 shadow-2xl overflow-hidden
