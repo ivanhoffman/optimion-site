@@ -5,8 +5,7 @@ import { useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 
 /**
- * Stylized Calendly modal (glass look preserved).
- * Fix: ensure no white background shows behind the blur while open.
+ * Stylized Calendly modal (glass look preserved) + no white background flash.
  */
 export default function CalendlyModal({
   open,
@@ -20,7 +19,7 @@ export default function CalendlyModal({
 }) {
   const containerRef = useRef(null);
 
-  // Build a URL with Calendly color params (dark inside iframe)
+  // Dark themed Calendly URL
   const themedUrl = (() => {
     const params = new URLSearchParams({
       background_color: stripHash(colors.background),
@@ -34,11 +33,11 @@ export default function CalendlyModal({
   useEffect(() => {
     if (!open) return;
 
-    // lock page scroll (prevents page scrollbar + any paint glitches)
+    // Lock page scroll
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
 
-    // ensure Calendly CSS
+    // Calendly CSS
     if (!document.getElementById("calendly-widget-css")) {
       const link = document.createElement("link");
       link.id = "calendly-widget-css";
@@ -47,7 +46,7 @@ export default function CalendlyModal({
       document.head.appendChild(link);
     }
 
-    // init inline widget into our container
+    // Init inline widget
     const initInline = () => {
       if (!containerRef.current) return;
       containerRef.current.innerHTML = "";
@@ -79,27 +78,32 @@ export default function CalendlyModal({
 
   if (!open) return null;
 
-  // Render at body root; add a dark base on the wrapper to avoid any white flash
+  // Portal to <body> with a solid dark base + blurred overlay (prevents any white)
   return createPortal(
     <div
-      className="fixed inset-0 z-[1000] bg-[#0b0b0d]/80"   // ← dark base layer
+      className="fixed inset-0 z-[1000]"
       aria-modal="true"
       role="dialog"
+      // hard fallback base in case classes haven't painted yet
+      style={{ backgroundColor: "rgba(11,11,13,0.92)" }}
     >
-      {/* Backdrop (click to close) */}
+      {/* Darkened/blurred overlay */}
       <div
         onClick={onClose}
         aria-label="Close"
         className="absolute inset-0 bg-black/65 backdrop-blur-sm"
       />
 
-      {/* Glass shell (unchanged look) */}
+      {/* Centered glass shell (your original look) */}
       <div className="absolute inset-0 flex items-center justify-center p-4">
         <div
           className="relative w-full max-w-[960px] h-[82vh] rounded-2xl border border-white/10 bg-neutral-950/90 shadow-2xl overflow-hidden
                      before:absolute before:inset-0 before:pointer-events-none
                      before:bg-[radial-gradient(80%_50%_at_50%_0%,rgba(34,211,238,.12),rgba(139,92,246,.08)_45%,rgba(236,72,153,.06)_70%,transparent_80%)]"
         >
+          {/* extra dark underlay behind the iframe to kill any load flash */}
+          <div className="absolute inset-0 bg-[#0b0b0d]" aria-hidden />
+
           {/* Close button */}
           <button
             onClick={onClose}
@@ -111,8 +115,8 @@ export default function CalendlyModal({
             ✕
           </button>
 
-          {/* Calendly inline container */}
-          <div ref={containerRef} className="w-full h-full" />
+          {/* Calendly inline container (sits above the dark underlay) */}
+          <div ref={containerRef} className="relative w-full h-full" />
         </div>
       </div>
     </div>,

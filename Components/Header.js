@@ -6,33 +6,30 @@ import Link from "next/link";
 import CalendlyModal from "@/Components/CalendlyModal";
 import { CalendarDays } from "lucide-react";
 
-/** Smoothly scroll to an element ID, accounting for sticky header height. */
+/** Smooth scroll to an element ID, accounting for sticky header height. */
 function scrollToId(id) {
   if (typeof document === "undefined" || !id) return;
   const el = document.getElementById(id);
   if (!el) return;
-
   const header = document.querySelector("header");
   const offset = (header?.getBoundingClientRect().height ?? 0) + 12;
-
   const top = window.scrollY + el.getBoundingClientRect().top - offset;
   window.scrollTo({ top, behavior: "smooth" });
 }
 
-/** On hash loads or hash changes, perform an offset scroll. */
+/** On initial load & whenever hash changes, perform the offset scroll. */
 function HashScrollFix() {
   const handle = useCallback(() => {
-    if (typeof window === "undefined") return;
     const hash = window.location.hash;
     if (!hash) return;
     const id = hash.slice(1);
-    // do it twice in case content below lazy-loads
-    setTimeout(() => scrollToId(id), 0);
-    setTimeout(() => scrollToId(id), 200);
+    // run twice to cover lazy content/layout shifts
+    requestAnimationFrame(() => scrollToId(id));
+    setTimeout(() => scrollToId(id), 180);
   }, []);
 
   useEffect(() => {
-    handle(); // initial
+    handle(); // direct visit like /#get-started
     const onHash = () => handle();
     window.addEventListener("hashchange", onHash);
     return () => window.removeEventListener("hashchange", onHash);
@@ -41,19 +38,22 @@ function HashScrollFix() {
   return null;
 }
 
-/** Nav link: cross-page route; smooth-scroll when already on home. */
+/** NavLink: cross-page route; on home, set hash (fires hashchange) and scroll. */
 function NavLink({ id, children, className = "" }) {
   const href = `/#${id}`;
-
   const onClick = (e) => {
-    if (typeof window === "undefined") return;
     if (window.location.pathname === "/") {
       e.preventDefault();
-      history.replaceState(null, "", `#${id}`); // update URL without jump
-      scrollToId(id);
+      const newHash = `#${id}`;
+      // If the hash is already the same, force the handler to run
+      if (window.location.hash === newHash) {
+        // trigger the handler manually
+        window.dispatchEvent(new HashChangeEvent("hashchange"));
+      } else {
+        window.location.hash = newHash; // will fire hashchange
+      }
     }
   };
-
   return (
     <Link href={href} scroll={false} onClick={onClick} className={className}>
       {children}
