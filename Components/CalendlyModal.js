@@ -16,9 +16,9 @@ export default function CalendlyModal({
   onClose,
   url,
   colors = {
-    background: "#0b0b0d",
-    text: "#e5e7eb",
-    primary: "#22d3ee",
+    background: "#0b0b0d", // page background inside iframe
+    text: "#e5e7eb",       // text color
+    primary: "#22d3ee",    // accent (buttons/links)
   },
 }) {
   const containerRef = useRef(null);
@@ -49,6 +49,7 @@ export default function CalendlyModal({
     // Ensure Calendly script, then init inline widget
     const initInline = () => {
       if (!containerRef.current) return;
+      // Clear any previous iframe
       containerRef.current.innerHTML = "";
       window.Calendly?.initInlineWidget?.({
         url: themedUrl,
@@ -71,6 +72,7 @@ export default function CalendlyModal({
     }
 
     return () => {
+      // Optional cleanup: remove iframe contents
       if (containerRef.current) containerRef.current.innerHTML = "";
     };
   }, [open, themedUrl]);
@@ -79,7 +81,7 @@ export default function CalendlyModal({
 
   return (
     <div
-      className="fixed inset-0 z-[99999]"
+      className="fixed inset-0 z-[99999]"  /* raised to stay over page text */
       aria-modal="true"
       role="dialog"
     >
@@ -90,10 +92,10 @@ export default function CalendlyModal({
         className="absolute inset-0 bg-black/65 backdrop-blur-sm"
       />
 
-      {/* Modal shell (unchanged glass) */}
+      {/* Modal shell (your exact glass UI) */}
       <div className="absolute inset-0 flex items-center justify-center p-4">
         <div
-          className="relative isolate w-full max-w-[960px] h-[82vh] rounded-2xl border border-white/10 bg-neutral-950/90 shadow-2xl overflow-hidden
+          className="relative w-full max-w-[960px] h-[82vh] rounded-2xl border border-white/10 bg-neutral-950/90 shadow-2xl overflow-hidden
                      before:absolute before:inset-0 before:pointer-events-none
                      before:bg-[radial-gradient(80%_50%_at_50%_0%,rgba(34,211,238,.12),rgba(139,92,246,.08)_45%,rgba(236,72,153,.06)_70%,transparent_80%)]"
         >
@@ -108,25 +110,24 @@ export default function CalendlyModal({
             ✕
           </button>
 
-          {/* Calendly inline container */}
-          <div className="relative w-full h-full">
-            {/* Always-on anti-sheet veil (covers Calendly's white gutters but leaves center clear) */}
-            <div
-              className="pointer-events-none absolute inset-0 z-10"
-              style={{
-                // side gutters darken + top/bottom fade; center remains transparent
-                background: [
-                  // side vignette to remove white side sheets
-                  "linear-gradient(to right, rgba(11,11,13,.96) 0%, rgba(11,11,13,.92) 10%, rgba(11,11,13,0) 24%, rgba(11,11,13,0) 76%, rgba(11,11,13,.92) 90%, rgba(11,11,13,.96) 100%)",
-                  // top fade (Calendly has a light header glow)
-                  "linear-gradient(to bottom, rgba(11,11,13,.95) 0px, rgba(11,11,13,0) 140px)",
-                  // bottom fade (just in case)
-                  "linear-gradient(to top, rgba(11,11,13,.95) 0px, rgba(11,11,13,0) 140px)",
-                ].join(", "),
-              }}
-            />
-            <div ref={containerRef} className="w-full h-full bg-[#0b0b0d]" />
-          </div>
+          {/* ---- Anti-white-sheet overlay (new) ---- */}
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 z-10"
+            style={{
+              // Only darken the outer gutters; center remains 100% clear.
+              mixBlendMode: "multiply",
+              background: "#0b0b0d",
+              opacity: 0.92,
+              WebkitMaskImage:
+                "radial-gradient(130% 95% at 50% 45%, rgba(0,0,0,0) 62%, rgba(0,0,0,1) 78%)",
+              maskImage:
+                "radial-gradient(130% 95% at 50% 45%, rgba(0,0,0,0) 62%, rgba(0,0,0,1) 78%)",
+            }}
+          />
+
+          {/* Calendly inline container (unchanged) */}
+          <div ref={containerRef} className="w-full h-full" />
         </div>
       </div>
     </div>
