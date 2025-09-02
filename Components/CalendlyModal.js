@@ -1,7 +1,7 @@
 // Components/CalendlyModal.js
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 
 /**
  * A stylized modal that hosts Calendly's inline widget.
@@ -22,7 +22,7 @@ export default function CalendlyModal({
   },
 }) {
   const containerRef = useRef(null);
-  const [iframeReady, setIframeReady] = useState(false); // NEW: cover until Calendly finishes loading
+  const moRef = useRef(null); // keep a handle to disconnect on cleanup
 
   // Build a URL with Calendly color params
   const themedUrl = (() => {
@@ -34,6 +34,24 @@ export default function CalendlyModal({
     });
     return `${url}${url.includes("?") ? "&" : "?"}${params.toString()}`;
   })();
+
+  // Force the injected Calendly iframe’s own element to a dark background.
+  // (We cannot style its *contents*, but the element background shows around the “sheet”.)
+  const paintIframeDark = () => {
+    const host = containerRef.current;
+    if (!host) return;
+
+    const iframe = host.querySelector("iframe");
+    if (iframe) {
+      // element background (outside Calendly's inner sheet)
+      iframe.style.background = colors.background;
+      iframe.style.display = "block";
+      iframe.style.width = "100%";
+      iframe.style.height = "100%";
+      iframe.style.border = "0";
+      iframe.setAttribute("allowtransparency", "true"); // harmless, helps older engines
+    }
+  };
 
   useEffect(() => {
     if (!open) return;
@@ -52,36 +70,26 @@ export default function CalendlyModal({
       if (!containerRef.current) return;
       // Clear any previous iframe
       containerRef.current.innerHTML = "";
-      setIframeReady(false); // show cover while (re)loading
 
+      // (re)render the widget
       window.Calendly?.initInlineWidget?.({
         url: themedUrl,
         parentElement: containerRef.current,
       });
 
-      // Observe the injected iframe and mark ready on load (prevents white flash)
-      const el = containerRef.current;
-      const tryHook = () => {
-        const iframe = el.querySelector("iframe");
-        if (iframe) {
-          // If Calendly reloads internally, rely on load again
-          iframe.addEventListener("load", () => setIframeReady(true), { once: true });
-          return true;
-        }
-        return false;
-      };
+      // Immediately try to paint, and also watch for re-renders
+      paintIframeDark();
 
-      if (!tryHook()) {
-        const mo = new MutationObserver(() => {
-          if (tryHook()) mo.disconnect();
-        });
-        mo.observe(el, { childList: true, subtree: true });
-        // safety: never leave the cover stuck
-        setTimeout(() => {
-          setIframeReady(true);
-          mo.disconnect();
-        }, 2500);
-      }
+      // Observe children—Calendly can re-create the iframe on navigation
+      if (moRef.current) moRef.current.disconnect();
+      moRef.current = new MutationObserver(() => {
+        // on any change, repaint the iframe element background
+        paintIframeDark();
+      });
+      moRef.current.observe(containerRef.current, {
+        childList: true,
+        subtree: true,
+      });
     };
 
     const existing = document.getElementById("calendly-widget-script");
@@ -99,7 +107,7 @@ export default function CalendlyModal({
     }
 
     return () => {
-      // Optional cleanup: remove iframe contents
+      if (moRef.current) moRef.current.disconnect();
       if (containerRef.current) containerRef.current.innerHTML = "";
     };
   }, [open, themedUrl]);
@@ -108,28 +116,28 @@ export default function CalendlyModal({
 
   return (
     <div
-      className="fixed inset-0 z[1000]"
+      className="fixed inset-0 z-[99999]"  // <- ensure we sit above everything
       aria-modal="true"
       role="dialog"
     >
-      {/* Backdrop */}
+      {/* Backdrop (unchanged) */}
       <button
         aria-label="Close"
         onClick={onClose}
         className="absolute inset-0 bg-black/65 backdrop-blur-sm"
       />
 
-      {/* Modal shell */}
+      {/* Modal shell (your exact glass UI; only minor additions: `isolate` and bg on host) */}
       <div className="absolute inset-0 flex items-center justify-center p-4">
         <div
           className="relative isolate w-full max-w-[960px] h-[82vh] rounded-2xl border border-white/10 bg-neutral-950/90 shadow-2xl overflow-hidden
                      before:absolute before:inset-0 before:pointer-events-none
                      before:bg-[radial-gradient(80%_50%_at_50%_0%,rgba(34,211,238,.12),rgba(139,92,246,.08)_45%,rgba(236,72,153,.06)_70%,transparent_80%)]"
         >
-          {/* Close button */}
+          {/* Close button (unchanged) */}
           <button
             onClick={onClose}
-            className="absolute top-2 right-2 z-20 inline-flex h-9 w-9 items-center justify-center rounded-md
+            className="absolute top-2 right-2 z-10 inline-flex h-9 w-9 items-center justify-center rounded-md
                        bg-white/5 hover:bg-white/10 border border-white/10 text-gray-200"
             aria-label="Close scheduling modal"
             type="button"
@@ -137,14 +145,11 @@ export default function CalendlyModal({
             ✕
           </button>
 
-          {/* Calendly inline container */}
-          <div className="relative w-full h-full">
-            {/* NEW: cover layer that overrides any white flash from Calendly until the iframe is ready */}
-            {!iframeReady && (
-              <div className="absolute inset-0 z-10 pointer-events-none bg-neutral-950/95 backdrop-blur-sm" />
-            )}
-            <div ref={containerRef} className="w-full h-full relative z-0" />
-          </div>
+          {/* Calendly inline container (give the host a dark fill too) */}
+          <div
+            ref={containerRef}
+            className="w-full h-full bg-[#0b0b0d]"
+          />
         </div>
       </div>
     </div>
