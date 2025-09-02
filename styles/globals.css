@@ -64,3 +64,23 @@ section{ background: transparent; position: relative; }
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
+/* --- Mobile hardening --- */
+html, body {
+  max-width: 100%;
+  overflow-x: hidden;         /* stop sideways scroll */
+  overscroll-behavior-x: none;
+}
+
+/* keep media from overflowing the viewport */
+img, svg, canvas, video {
+  max-width: 100%;
+  height: auto;
+}
+
+/* hide “heavy” visuals on phones */
+@media (max-width: 767px) {
+  #hero-visual,
+  #process-flowchart {
+    display: none !important;
+  }
+}

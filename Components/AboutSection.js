@@ -16,9 +16,16 @@ export default function AboutSection() {
   const [calOpen, setCalOpen] = useState(false);
 
   return (
-    <section  id="about" className="section-fade relative min-h-screen flex flex-col-reverse md:flex-row items-center justify-between px-6 md:px-16 py-24 overflow-visible text-white">
-      {/* LEFT: Flowchart */}
-      <div className="w-full md:w-1/2 flex justify-center items-center">
+    <section
+      id="about"
+      className="section-fade relative min-h-screen flex flex-col-reverse md:flex-row items-center justify-between px-6 md:px-16 py-24 overflow-hidden md:overflow-visible text-white"
+    >
+      {/* LEFT: Flowchart (hidden on mobile) */}
+      <div
+        id="process-flowchart"
+        className="hidden md:flex md:w-1/2 justify-center items-center"
+        aria-hidden="true"
+      >
         <Flowchart />
       </div>
 
@@ -58,7 +65,7 @@ export default function AboutSection() {
 
         <motion.button
           type="button"
-          onClick={() => setCalOpen(true)} // ← open Calendly modal
+          onClick={() => setCalOpen(true)}
           initial={{ opacity: 0, y: 14 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.45, delay: 0.25 }}
@@ -103,7 +110,7 @@ function Flowchart() {
 
   // GLOBAL diamond title nudges (adjust here to move ALL diamond titles)
   const DIAMOND_TITLE_DEFAULT_DX = 0; // left/right (+right, -left)
-  const DIAMOND_TITLE_DEFAULT_DY = 3; // up/down (+down, -up) — moved down a bit by default
+  const DIAMOND_TITLE_DEFAULT_DY = 3; // up/down (+down, -up)
 
   const toXY = (c, r) => ({
     x: BOARD.pad + c * GRID.colW + GRID.colW / 2,
@@ -115,95 +122,34 @@ function Flowchart() {
     N("start", "rect", 1, 0, "Start / Triggers", "Form • Cart • Webhook"),
     N("cap", "rect", 1, 1, "Capture Event", "Normalize fields"),
     N("enrich", "rect", 1, 2, "Enrich & De-dupe", "Verify • Merge"),
-
-    // Force 3 lines + nudge down slightly
-    N("known", "diamond", 1, 3, "Known in CRM?", "", {
-      titleLines: ["Known", "in", "CRM?"],
-      titleDy: 3, // tweak per-node vertical position here
-      // titleDx: 0, // uncomment to move left/right per-node
-    }),
-
+    N("known", "diamond", 1, 3, "Known in CRM?", "", { titleLines: ["Known","in","CRM?"], titleDy: 3 }),
     N("update", "rect", 0, 4, "Update CRM Record", "Advance stage"),
     N("seg", "rect", 2, 4, "Segment & Score", "Hot • Warm • Nurture"),
-
     N("win", "rect", 0, 5, "Winback / Loyalty", "Email • SMS"),
     N("cad", "rect", 2, 5, "Cadence", "Email → SMS → Wait"),
-
-    // Force 2 lines
-    N("hiQ", "diamond", 0, 6, "High intent?", "", { dy: -10, titleLines: ["High", "intent?"] }),
+    N("hiQ", "diamond", 0, 6, "High intent?", "", { dy: -10, titleLines: ["High","intent?"] }),
     N("intent", "diamond", 2, 6, "Intent check?", "", { dy: -10 }),
-
     N("bookL", "rect", 0, 7, "Booked / Checkout", "Calendar / Pay", { w: 188, dx: -50, dy: 20 }),
     N("esc", "rect", 1, 7, "Escalate", "Call task", { w: 188, dx: -68, dy: 20 }),
     N("bookR", "rect", 2, 7, "Booked / Checkout", "Calendar / Pay", { w: 186, dx: -110, dy: 20 }),
     N("recy", "rect", 2, 7, "Recycle", "Retarget • Retry", { w: 170, dx: 70, dy: 20 }),
-
     N("crm", "rect", 1, 8, "CRM Update & Notify", "Create/Update • Slack", { w: 238, dy: 30 }),
   ];
 
   /* ------------------------- EDGES ------------------------- */
   const edges = [
-    // same-column chains
-    E("start", "cap"),
-    E("cap", "enrich"),
-    E("enrich", "known"),
-
-    // Decision → left/right (elbows)
-    E("known", "update", "vh", {
-      label: "YES",
-      labelAt: 0.22,
-      labelDx: -10,
-      labelDy: -8,
-      bendY: toXY(0, 4).y - GRID.rowH / 2 + 6,
-    }),
-    E("known", "seg", "vh", {
-      label: "NO",
-      labelAt: 0.78,
-      labelDy: -8,
-      bendY: toXY(2, 4).y - GRID.rowH / 2 + 6,
-    }),
-
-    // middle same-column
-    E("update", "win"),
-    E("seg", "cad"),
-
-    // lower decisions
-    E("win", "hiQ"),
-    E("cad", "intent"),
-
-    // decisions → outcomes (elbows)
-    E("hiQ", "bookL", "vh", {
-      label: "YES",
-      labelAt: 0.14,
-      labelDx: -14,
-      labelDy: -8,
-      bendY: toXY(0, 7).y - GRID.rowH / 2 - 10,
-    }),
-    E("hiQ", "esc", "vh", {
-      label: "NO",
-      labelAt: 0.86,
-      labelDy: -8,
-      bendY: toXY(1, 7).y - GRID.rowH / 2 - 10,
-    }),
-    E("intent", "bookR", "vh", {
-      label: "YES",
-      labelAt: 0.16,
-      labelDx: -14,
-      labelDy: -8,
-      bendY: toXY(2, 7).y - GRID.rowH / 2 - 10,
-    }),
-    E("intent", "recy", "vh", {
-      label: "NO",
-      labelAt: 0.80,
-      labelDy: -8,
-      bendY: toXY(2, 7).y - GRID.rowH / 2 - 10,
-    }),
-
-    // collector
-    E("bookL", "crm", "vh", { bend: "collector" }),
-    E("esc", "crm", "vh", { bend: "collector" }),
-    E("bookR", "crm", "vh", { bend: "collector" }),
-    E("recy", "crm", "vh", { bend: "collector" }),
+    E("start", "cap"), E("cap", "enrich"), E("enrich", "known"),
+    E("known", "update", "vh", { label:"YES", labelAt:0.22, labelDx:-10, labelDy:-8, bendY: toXY(0,4).y - 92/2 + 6 }),
+    E("known", "seg",    "vh", { label:"NO",  labelAt:0.78,              labelDy:-8, bendY: toXY(2,4).y - 92/2 + 6 }),
+    E("update", "win"), E("seg", "cad"),
+    E("win", "hiQ", "vh",   { label:"YES", labelAt:0.14, labelDx:-14, labelDy:-8, bendY: toXY(0,7).y - 92/2 - 10 }),
+    E("win", "esc", "vh",   { label:"NO",  labelAt:0.86,               labelDy:-8, bendY: toXY(1,7).y - 92/2 - 10 }),
+    E("intent", "bookR","vh",{ label:"YES", labelAt:0.16, labelDx:-14, labelDy:-8, bendY: toXY(2,7).y - 92/2 - 10 }),
+    E("intent", "recy","vh",{ label:"NO",  labelAt:0.80,               labelDy:-8, bendY: toXY(2,7).y - 92/2 - 10 }),
+    E("bookL","crm","vh",{ bend:"collector" }),
+    E("esc","crm","vh",{ bend:"collector" }),
+    E("bookR","crm","vh",{ bend:"collector" }),
+    E("recy","crm","vh",{ bend:"collector" }),
   ];
 
   /* ------------------------------- BUILD ------------------------------ */
@@ -232,7 +178,7 @@ function Flowchart() {
     const A = bottomOf(s);
     const B = topOf(t);
     const y = bendY ?? (s.y + t.y) / 2;
-    const endY = B.y - ARROW.stemPad;
+    const endY = B.y - 8;
     return { d: `M ${A.x} ${A.y} L ${A.x} ${y} L ${B.x} ${y} L ${B.x} ${endY}`, end: { x: B.x, y: B.y } };
   };
 
@@ -241,7 +187,7 @@ function Flowchart() {
     const B = topOf(t);
     const y = bendY ?? (s.y + t.y) / 2;
     const midX = (A.x + B.x) / 2;
-    const endY = B.y - ARROW.stemPad;
+    const endY = B.y - 8;
     return {
       d: `M ${A.x} ${A.y} L ${midX} ${A.y} L ${midX} ${y} L ${B.x} ${y} L ${B.x} ${endY}`,
       end: { x: B.x, y: B.y },
@@ -352,7 +298,7 @@ function Flowchart() {
             const A = bottomOf(s);
             const B = topOf(t);
             const y1 = A.y,
-              y2 = B.y - ARROW.stemPad;
+              y2 = B.y - 8;
             const h = Math.max(0, y2 - y1);
             const w = STROKE.width;
             const x0 = s.x - w / 2;
@@ -388,7 +334,7 @@ function Flowchart() {
                   transition={{ delay: 0.38 + i * 0.05 }}
                   viewport={{ once: true }}
                 >
-                  <ArrowTip x={B.x} y={B.y} gradId={gradId} cfg={ARROW} />
+                  <ArrowTip x={B.x} y={B.y} gradId={gradId} />
                 </motion.g>
               </g>
             );
@@ -431,7 +377,7 @@ function Flowchart() {
                   transition={{ delay: 0.38 + i * 0.06 }}
                   viewport={{ once: true }}
                 >
-                  <ArrowTip x={seg.end.x} y={seg.end.y} gradId={gradId} cfg={ARROW} />
+                  <ArrowTip x={seg.end.x} y={seg.end.y} gradId={gradId} />
                 </motion.g>
               </g>
             );
@@ -593,8 +539,8 @@ function TextBlock({ node, isDiamond, defaultDx = 0, defaultDy = 0 }) {
 }
 
 /** Manual arrow tip (downward) */
-function ArrowTip({ x, y, gradId, cfg }) {
-  const { tipH, tipW } = cfg;
+function ArrowTip({ x, y, gradId }) {
+  const tipH = 8, tipW = 6;
   const d = `M ${x - tipW} ${y - tipH} L ${x + tipW} ${y - tipH} L ${x} ${y} Z`;
   return <path d={d} fill={`url(#${gradId})`} opacity="0.98" />;
 }
