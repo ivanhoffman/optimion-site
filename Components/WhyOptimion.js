@@ -1,9 +1,8 @@
-// Components/WhyOptimion.js
 "use client";
 import React, { useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Settings, Repeat, Link, BarChart, Calendar, Clock, ArrowRight } from "lucide-react";
-import CalendlyModal from "@/Components/CalendlyModal"; // ← added
+import CalendlyModal from "@/Components/CalendlyModal";
 
 /* ---------- tiny utils ---------- */
 function pad(n) { return n < 10 ? `0${n}` : `${n}`; }
@@ -42,13 +41,11 @@ function generateSlots(count = 3) {
     const next = new Date(t);
     if (hour < open) { next.setHours(open, 0, 0, 0); }
     else if (hour > close || (hour === close && min > 0)) {
-      // move to tomorrow at open
       next.setDate(next.getDate() + 1);
       next.setHours(open, 0, 0, 0);
     }
     t = next;
     slots.push(new Date(t));
-    // step 1–3 slots ahead for variety
     const step = [1, 2, 3][slots.length % 3];
     t = new Date(t.getTime() + step * 30 * 60000);
   }
@@ -112,7 +109,6 @@ function KPIStack() {
           </motion.div>
         </AnimatePresence>
       </div>
-      {/* tiny hint dots */}
       <div className="flex gap-1 mt-2">
         {KPI_DATA.map((_, i) => (
           <div key={i} className={`h-1.5 w-1.5 rounded-full ${i===idx ? "bg-white/80" : "bg-white/20"}`} />
@@ -127,7 +123,6 @@ function ScheduleCard({ onOpenCalendly }) {
   const slots = useMemo(() => generateSlots(3), []);
   const [floating, setFloating] = useState(0);
 
-  // gentle idle float
   useEffect(() => {
     const id = setInterval(() => setFloating(f => (f + 1) % 3600), 50);
     return () => clearInterval(id);
@@ -144,7 +139,6 @@ function ScheduleCard({ onOpenCalendly }) {
       transition={{ duration: 0.5, ease: "easeOut" }}
       className="mt-4 rounded-2xl border border-white/10 bg-white/[0.04] p-5 backdrop-blur-sm relative overflow-hidden"
     >
-      {/* animated border glow */}
       <div
         className="pointer-events-none absolute inset-0 rounded-2xl ring-1 ring-transparent"
         style={{
@@ -171,7 +165,7 @@ function ScheduleCard({ onOpenCalendly }) {
             type="button"
             whileHover={{ y: -2 }}
             whileTap={{ y: 0 }}
-            onClick={onOpenCalendly} // ← open modal
+            onClick={onOpenCalendly}
             className="w-full text-left rounded-lg px-3 py-2 border border-white/10 bg-black/30 hover:bg-black/40 text-gray-200 flex items-center justify-between"
           >
             <span className="text-[13px]">
@@ -184,7 +178,7 @@ function ScheduleCard({ onOpenCalendly }) {
 
       <motion.button
         type="button"
-        onClick={onOpenCalendly} // ← open modal
+        onClick={onOpenCalendly}
         whileHover={{ y: -1 }}
         className="mt-4 inline-flex items-center justify-center w-full rounded-md px-3 py-2 text-sm text-white bg-gradient-to-r from-cyan-500 to-pink-500 hover:brightness-110"
       >
@@ -196,11 +190,19 @@ function ScheduleCard({ onOpenCalendly }) {
 
 /* ===================================================================== */
 export default function WhyOptimion() {
-  // Calendly modal state (kept local to this section)
   const [calOpen, setCalOpen] = useState(false);
 
   return (
-    <section id="why-optimion" className="section-fade relative w-full px-6 md:px-16 py-24 overflow-visible flex flex-col md:flex-row items-center justify-between gap-12">
+    <section
+      id="why-optimion"
+      className="
+        section-fade relative w-full
+        px-6 md:px-16
+        pt-10 pb-16 md:py-24     /* ⬅️ tighter top/bottom on mobile */
+        overflow-visible
+        flex flex-col md:flex-row items-center justify-between gap-12
+      "
+    >
       {/* Left: Text Content */}
       <motion.div
         className="max-w-xl z-10 text-white"
@@ -219,7 +221,6 @@ export default function WhyOptimion() {
           Our team of experts build custom CRMs, powerful automations, and seamless integrations so you can stop fighting your tools and start scaling operations.
         </p>
 
-        {/* Bullet points */}
         <ul className="space-y-4 text-gray-200">
           <motion.li className="flex items-center gap-3" whileHover={{ scale: 1.03 }} transition={{ type: "spring", stiffness: 300 }}>
             <Repeat className="w-5 h-5 text-cyan-400" />
@@ -251,13 +252,12 @@ export default function WhyOptimion() {
         className="pointer-events-none absolute right-[-15%] md:right-[-8%] top-1/2 -translate-y-1/2 w-[55vw] md:w-[40vw] h-[55vw] md:h-[40vw] bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 rounded-full blur-3xl opacity-20"
         initial={{ opacity: 0, scale: 0.9 }}
         whileInView={{ opacity: 0.2, scale: 1 }}
-        transition={{ duration: 1.2, ease: "easeOut" }}
+        transition={{ duration: 1.2, ease: 'easeOut' }}
         viewport={{ once: true }}
       />
 
       {/* Calendly Modal (styled) */}
       <CalendlyModal
-        // support either prop name used elsewhere
         open={calOpen}
         isOpen={calOpen}
         onClose={() => setCalOpen(false)}

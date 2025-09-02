@@ -6,7 +6,7 @@ import { ArrowRight, Check } from "lucide-react";
 import CalendlyModal from "@/Components/CalendlyModal";
 
 /**
- * Visual — unchanged functionally, just give the wrapper an id for CSS.
+ * Visual — unchanged functionally, wrapper has an id for CSS.
  */
 function HeroVisual() {
   const SIZE = 520;
@@ -139,17 +139,17 @@ export default function HeroSection() {
       id="hero"
       className="
         section-fade relative
-        min-h-[88svh] md:min-h-screen
+        min-h-0 md:min-h-screen           /* ⬅️ remove tall min-height on mobile */
         text-white
         flex items-start md:items-center
         justify-between
         px-6 md:px-16
-        pt-16 pb-10 md:pt-0 md:pb-0
+        pt-10 pb-6 md:pt-0 md:pb-0        /* ⬅️ tighter mobile paddings */
         overflow-visible
       "
     >
       <div className="max-w-2xl z-10">
-        <motion.h1 initial={{opacity:0,x:-50}} whileInView={{opacity:1,x:0}} transition={{duration:.8}} viewport={{once:true}} className="mb-4">
+        <motion.h1 initial={{opacity:0,x:-50}} whileInView={{opacity:1,x:0}} transition={{duration:.8}} viewport={{once:true}} className="mb-3">
           <span className="text-4xl md:text-5xl font-medium leading-tight text-transparent bg-clip-text gradient-text antialiased">
             Welcome to the
           </span>
@@ -170,7 +170,7 @@ export default function HeroSection() {
           whileInView={{opacity:1,x:0}}
           transition={{delay:.4,duration:.8}}
           viewport={{once:true}}
-          className="text-gray-300 text-lg max-w-lg mb-6"
+          className="text-gray-300 text-lg max-w-lg mb-5"
         >
           We build custom CRMs, powerful automations, and optimized workflows for any business. Eliminate bottlenecks. Unlock growth.
         </motion.p>

@@ -14,7 +14,8 @@
   );
 }
 
-html, body { height: 100%; }
+/* Basic root sizing */
+html, body { height: 100%; margin: 0; padding: 0; }
 
 body{
   background: #000;
@@ -76,7 +77,7 @@ img, svg, canvas, video {
   }
 }
 
-/* ===== Kill accidental inner scrollbars (desktop & mobile) ===== */
+/* ===== Kill accidental inner scrollbars (all sizes) ===== */
 html, body { overflow-x: hidden; }
 
 /* Never let sections or the main wrapper create their own y-scrollbars */
@@ -86,29 +87,36 @@ html, body { overflow-x: hidden; }
   overflow-y: visible !important;
 }
 
-/* Some browsers can give inline SVGs their own scrollbars when filters extend;
-   keep SVGs paint-through instead of scrollable. */
+/* Some browsers give inline SVGs their own scrollbars when filters extend */
 svg { overflow: visible; }
 
-/* ---------- One-true scroller on desktop (remove phantom extra bar) ---------- */
-/* Make BODY the only scroll container on desktop; ensure wrappers expand instead of scrolling */
+/* ---------- One true scroller on DESKTOP ---------- */
+/* Make BODY the only vertical scroll container on desktop to prevent the phantom extra scrollbar */
 @media (min-width: 768px) {
-  html { overflow-y: visible !important; }        /* html does not scroll */
-  body { overflow-y: auto !important; }           /* page scrolls here */
+  /* 1) Disable scrolling on the root element */
+  html { overflow-y: hidden !important; }
 
+  /* 2) Make body the scroller and lock it to the viewport height */
+  body {
+    height: 100vh;           /* body forms the scrollport */
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch; /* smooth scrolling on WebKit */
+  }
+
+  /* 3) Ensure app wrappers expand rather than scroll */
   #__next,
   main,
   #main {
-    overflow-y: visible !important;
     height: auto !important;
     max-height: none !important;
+    overflow-y: visible !important;
   }
 
-  /* Guard: if some third-party wrapper div gets overflow, neutralize it */
+  /* 4) Guard: neutralize any unexpected sibling wrapper the host may inject */
   body > div:not(#__next) {
-    overflow-y: visible !important;
     height: auto !important;
     max-height: none !important;
+    overflow-y: visible !important;
   }
 }
 
