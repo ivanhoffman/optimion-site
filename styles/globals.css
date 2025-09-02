@@ -14,14 +14,19 @@
   );
 }
 
-html, body { height: 100%; }
-
+/* Only the root should scroll: use min-height (not height) */
+html {
+  min-height: 100%;
+  overflow-y: auto;          /* single, main scrollbar */
+}
 body{
+  min-height: 100%;
   background: #000;
   color: #ededed;
   font-family: Arial, Helvetica, sans-serif;
-  overflow-x: hidden;
+  overflow-x: hidden;        /* stop sideways scroll */
   position: relative;
+  overscroll-behavior-x: none;
 }
 
 /* Fixed gradient behind everything = no section seams */
@@ -40,8 +45,7 @@ body::before{
 /* Sections are transparent so the global gradient shows through */
 section{ background: transparent; position: relative; }
 
-/* Fade the *content* of each section at the top/bottom into the page gradient.
-   This avoids hard horizontal edges without stacking new color layers. */
+/* Fade the *content* of each section at the top/bottom into the page gradient. */
 .section-fade{
   /* top & bottom 56px fade */
   -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 56px, #000 calc(100% - 56px), transparent 100%);
@@ -50,7 +54,7 @@ section{ background: transparent; position: relative; }
           mask-repeat: no-repeat;
 }
 
-/* Optional: tighten/loosen the fade without touching components */
+/* Optional: tighten/loosen the fade on mobile */
 @media (max-width: 768px){
   .section-fade{
     -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 40px, #000 calc(100% - 40px), transparent 100%);
@@ -64,36 +68,28 @@ section{ background: transparent; position: relative; }
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
-/* --- Mobile hardening --- */
-html, body {
-  max-width: 100%;
-  overflow-x: hidden;         /* stop sideways scroll */
-  overscroll-behavior-x: none;
-}
 
-/* keep media from overflowing the viewport */
+/* --- Mobile hardening & media safety --- */
 img, svg, canvas, video {
   max-width: 100%;
   height: auto;
 }
 
-/* hide “heavy” visuals on phones */
+/* Hide heavy visuals on phones */
 @media (max-width: 767px) {
   #hero-visual,
   #process-flowchart {
     display: none !important;
   }
 }
-/* ===== Kill accidental inner scrollbars (desktop & mobile) ===== */
-html, body { overflow-x: hidden; }
 
-/* Never let sections or the main wrapper create their own y-scrollbars */
-#main,
-#main > section,
+/* ===== Ensure no nested vertical scrollbars ===== */
+#__next,
+main,
+section,
 .section-fade {
-  overflow-y: visible !important;
+  overflow-y: visible !important; /* sections/wrappers never create their own y-scroll */
 }
 
-/* Some browsers can give inline SVGs their own scrollbars when filters extend;
-   keep SVGs paint-through instead of scrollable. */
+/* Some browsers give inline SVGs their own scroll area when filters extend */
 svg { overflow: visible; }
