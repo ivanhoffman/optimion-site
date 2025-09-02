@@ -1,8 +1,11 @@
 // Components/Footer.js
 "use client";
 
+import Link from "next/link";
+
 export default function Footer() {
   const year = new Date().getFullYear();
+
   return (
     <footer className="mt-16 border-t border-white/10 bg-black/40">
       <div className="mx-auto max-w-7xl px-6 md:px-16 py-8 text-sm text-gray-300 flex flex-col md:flex-row items-center md:items-start justify-between gap-4">
@@ -14,10 +17,17 @@ export default function Footer() {
         </div>
 
         <div className="flex items-center gap-4 text-gray-400">
-          {/* Replace with real URLs when ready */}
-          <a href="/privacy" className="hover:text-white">Privacy</a>
-          <a href="/terms" className="hover:text-white">Terms</a>
-          <a href="#faq" className="hover:text-white">FAQ</a>
+          {/* Internal links use Next.js <Link> for proper routing */}
+          <Link href="/privacy" className="hover:text-white">
+            Privacy
+          </Link>
+          <Link href="/terms" className="hover:text-white">
+            Terms
+          </Link>
+          {/* Always go to the homepage FAQ anchor */}
+          <Link href="/#faq" className="hover:text-white" prefetch={false}>
+            FAQ
+          </Link>
         </div>
 
         <div className="text-gray-500">© {year} Optimion. All rights reserved.</div>
