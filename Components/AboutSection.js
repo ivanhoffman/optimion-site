@@ -4,7 +4,7 @@
 import React, { useId, useState } from "react";
 import { motion } from "framer-motion";
 import { CheckCircle } from "lucide-react";
-import CalendlyModal from "@/Components/CalendlyModal";
+import CalDotComModal from "@/Components/CalDotComModal"; // ⟵ swapped from CalendlyModal
 
 /**
  * Flowchart with guaranteed-visible stems + wrapped diamond labels +
@@ -12,6 +12,10 @@ import CalendlyModal from "@/Components/CalendlyModal";
  */
 export default function AboutSection() {
   const [calOpen, setCalOpen] = useState(false);
+
+  // Cal.com event URL (transparent, dark, your brand colors)
+  const calUrl =
+    "https://cal.com/optimion/30min?embed=true&theme=dark&backgroundColor=transparent&primaryColor=22d3ee&textColor=e5e7eb&layout=month_view";
 
   return (
     <section
@@ -80,13 +84,11 @@ export default function AboutSection() {
         </motion.button>
       </div>
 
-      {/* Calendly Modal (kept inside section for locality) */}
-      <CalendlyModal
+      {/* Modal (Cal.com) — UI unchanged */}
+      <CalDotComModal
         open={calOpen}
-        isOpen={calOpen}
         onClose={() => setCalOpen(false)}
-        url="https://calendly.com/ivan-optimion/30min"
-        colors={{ background: "#0b0b0d", text: "#e5e7eb", primary: "#22d3ee" }}
+        url={calUrl}
       />
     </section>
   );

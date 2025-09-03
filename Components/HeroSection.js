@@ -1,9 +1,10 @@
+// Components/HeroSection.js
 "use client";
 
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { ArrowRight, Check } from "lucide-react";
-import CalendlyModal from "@/Components/CalendlyModal";
+import CalDotComModal from "@/Components/CalDotComModal"; // ⟵ swapped from CalendlyModal
 
 /**
  * Visual — unchanged functionally, wrapper has an id for CSS.
@@ -134,6 +135,10 @@ function HeroVisual() {
 export default function HeroSection() {
   const [showCal, setShowCal] = useState(false);
 
+  // Cal.com event URL (transparent, dark, your brand colors)
+  const calUrl =
+    "https://cal.com/optimion/30min?embed=true&theme=dark&backgroundColor=transparent&primaryColor=22d3ee&textColor=e5e7eb&layout=month_view";
+
   return (
     <section
       id="hero"
@@ -194,11 +199,11 @@ export default function HeroSection() {
         <HeroVisual />
       </div>
 
-      <CalendlyModal
+      {/* New modal (Cal.com) – UI unchanged */}
+      <CalDotComModal
         open={showCal}
         onClose={() => setShowCal(false)}
-        url="https://calendly.com/ivan-optimion/30min"
-        colors={{ background: "#0b0b0d", text: "#e5e7eb", primary: "#22d3ee" }}
+        url={calUrl}
       />
     </section>
   );

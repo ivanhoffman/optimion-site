@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { Star } from "lucide-react";
-import CalendlyModal from "@/Components/CalendlyModal"; // ← added
+import CalDotComModal from "@/Components/CalDotComModal"; // ⟵ swapped from CalendlyModal
 
 /* One variants object for both reveal + hover states */
 const cardVariants = {
@@ -92,12 +92,15 @@ function Stars() {
 }
 
 export default function TrustedSection() {
-  // Calendly modal state (local to this section)
-  const [calOpen, setCalOpen] = useState(false); // ← added
+  const [calOpen, setCalOpen] = useState(false);
+
+  // Cal.com event URL (transparent, themed, embedded)
+  const calUrl =
+    "https://cal.com/optimion/30min?embed=true&theme=dark&backgroundColor=transparent&primaryColor=22d3ee&textColor=e5e7eb&layout=month_view";
 
   return (
     <section id="testimonials" className="section-fade relative w-full px-6 md:px-16 py-24 text-white">
-      {/* Header & copy (unchanged) */}
+      {/* Header & copy */}
       <motion.div
         initial={{ opacity: 0, y: 14 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -165,7 +168,7 @@ export default function TrustedSection() {
       >
         <button
           type="button"
-          onClick={() => setCalOpen(true)} // ← open Calendly modal
+          onClick={() => setCalOpen(true)}
           className="inline-flex items-center justify-center px-6 py-3 rounded-md text-white bg-gradient-to-r from-cyan-500 to-pink-500 hover:brightness-110 transition shadow-md"
           aria-haspopup="dialog"
           aria-expanded={calOpen ? "true" : "false"}
@@ -174,17 +177,11 @@ export default function TrustedSection() {
         </button>
       </motion.div>
 
-      {/* Calendly Modal */}
-      <CalendlyModal
+      {/* Modal (Cal.com) */}
+      <CalDotComModal
         open={calOpen}
-        isOpen={calOpen} // defensive: supports either prop name
         onClose={() => setCalOpen(false)}
-        url="https://calendly.com/ivan-optimion/30min"
-        colors={{
-          background: "#0b0b0d",
-          text: "#e5e7eb",
-          primary: "#22d3ee",
-        }}
+        url={calUrl}
       />
     </section>
   );

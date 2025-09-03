@@ -3,7 +3,7 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
-import CalendlyModal from "@/Components/CalendlyModal";
+import CalDotComModal from "@/Components/CalDotComModal"; // ⟵ swapped from CalendlyModal
 import { CalendarDays } from "lucide-react";
 
 /** Smooth scroll to an element ID, accounting for sticky header height. */
@@ -76,6 +76,10 @@ export default function Header({ variant = "site" }) {
     { label: "Get Started", id: "get-started" },
   ];
 
+  // Cal.com event URL (transparent, dark, your brand colors)
+  const calUrl =
+    "https://cal.com/optimion/30min?embed=true&theme=dark&backgroundColor=transparent&primaryColor=22d3ee&textColor=e5e7eb&layout=month_view";
+
   return (
     <>
       <HashScrollFix />
@@ -96,7 +100,10 @@ export default function Header({ variant = "site" }) {
           </Link>
 
           {showNav && (
-            <nav className="hidden md:flex items-center gap-6 text-sm text-gray-300" aria-label="Primary">
+            <nav
+              className="hidden md:flex items-center gap-6 text-sm text-gray-300"
+              aria-label="Primary"
+            >
               {NAV.map((item) => (
                 <NavLink key={item.id} id={item.id} className="hover:text-white">
                   {item.label}
@@ -120,12 +127,11 @@ export default function Header({ variant = "site" }) {
         </div>
       </header>
 
-      <CalendlyModal
+      {/* New modal (Cal.com) – UI unchanged */}
+      <CalDotComModal
         open={calOpen}
-        isOpen={calOpen}
         onClose={() => setCalOpen(false)}
-        url="https://calendly.com/ivan-optimion/30min"
-        colors={{ background: "#0b0b0d", text: "#e5e7eb", primary: "#22d3ee" }}
+        url={calUrl}
       />
     </>
   );

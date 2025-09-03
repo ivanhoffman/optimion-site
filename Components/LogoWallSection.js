@@ -3,7 +3,7 @@
 
 import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
-import CalendlyModal from "@/Components/CalendlyModal"; // ← added
+import CalDotComModal from "@/Components/CalDotComModal"; // ← swap in Cal.com modal
 
 /* ------------------------------- DATA ---------------------------------- */
 // Chips reordered: CRM first, All last
@@ -87,10 +87,12 @@ const containerStagger = {
 
 /* ------------------------------ COMPONENT -------------------------------- */
 export default function LogoWallSection() {
-  // Default to CRM
   const [active, setActive] = useState("CRM");
-  // Calendly modal state (local to this section)
-  const [calOpen, setCalOpen] = useState(false); // ← added
+  const [calOpen, setCalOpen] = useState(false);
+
+  // Cal.com event URL with your theme + transparent background (no white sheet)
+  const calUrl =
+    "https://cal.com/optimion/30min?embed=true&theme=dark&backgroundColor=transparent&primaryColor=22d3ee&textColor=e5e7eb&layout=month_view";
 
   const filtered = useMemo(() => {
     if (active === "All") return TOOLS;
@@ -141,7 +143,7 @@ export default function LogoWallSection() {
         </div>
       </div>
 
-      {/* Logo grid (keyed by active so the stagger replay is guaranteed) */}
+      {/* Logo grid */}
       <motion.div
         key={active}
         variants={containerStagger}
@@ -185,7 +187,7 @@ export default function LogoWallSection() {
         </span>
         <button
           type="button"
-          onClick={() => setCalOpen(true)} // ← open Calendly modal
+          onClick={() => setCalOpen(true)}
           className="inline-flex items-center justify-center px-4 py-2 rounded-md bg-gradient-to-r from-cyan-500 to-pink-500 text-white text-sm hover:brightness-110 transition shadow-md"
           aria-haspopup="dialog"
           aria-expanded={calOpen ? "true" : "false"}
@@ -194,18 +196,8 @@ export default function LogoWallSection() {
         </button>
       </div>
 
-      {/* Calendly Modal */}
-      <CalendlyModal
-        open={calOpen}
-        isOpen={calOpen} // defensive: supports either prop name
-        onClose={() => setCalOpen(false)}
-        url="https://calendly.com/ivan-optimion/30min"
-        colors={{
-          background: "#0b0b0d",
-          text: "#e5e7eb",
-          primary: "#22d3ee",
-        }}
-      />
+      {/* Modal (Cal.com) */}
+      <CalDotComModal open={calOpen} onClose={() => setCalOpen(false)} url={calUrl} />
     </section>
   );
 }

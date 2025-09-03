@@ -4,10 +4,14 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { CalendarDays, Sparkles, Check } from "lucide-react";
-import CalendlyModal from "@/Components/CalendlyModal";
+import CalDotComModal from "@/Components/CalDotComModal";
 
 export default function FinalCTASection() {
   const [calOpen, setCalOpen] = useState(false);
+
+  // Cal.com event URL with dark theme + transparent background (keeps glass UI clean)
+  const calUrl =
+    "https://cal.com/optimion/30min?embed=true&theme=dark&backgroundColor=transparent&primaryColor=22d3ee&textColor=e5e7eb&layout=month_view";
 
   return (
     <section
@@ -100,13 +104,8 @@ export default function FinalCTASection() {
         </button>
       </div>
 
-      <CalendlyModal
-        open={calOpen}
-        isOpen={calOpen}
-        onClose={() => setCalOpen(false)}
-        url="https://calendly.com/ivan-optimion/30min"
-        colors={{ background: "#0b0b0d", text: "#e5e7eb", primary: "#22d3ee" }}
-      />
+      {/* Modal (Cal.com) */}
+      <CalDotComModal open={calOpen} onClose={() => setCalOpen(false)} url={calUrl} />
     </section>
   );
 }

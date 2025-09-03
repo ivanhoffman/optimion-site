@@ -1,8 +1,9 @@
+// Components/WhyOptimion.js
 "use client";
 import React, { useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Settings, Repeat, Link, BarChart, Calendar, Clock, ArrowRight } from "lucide-react";
-import CalendlyModal from "@/Components/CalendlyModal";
+import CalDotComModal from "@/Components/CalDotComModal"; // ⟵ swapped from CalendlyModal
 
 /* ---------- tiny utils ---------- */
 function pad(n) { return n < 10 ? `0${n}` : `${n}`; }
@@ -192,13 +193,17 @@ function ScheduleCard({ onOpenCalendly }) {
 export default function WhyOptimion() {
   const [calOpen, setCalOpen] = useState(false);
 
+  // Cal.com event URL (transparent, themed, embedded)
+  const calUrl =
+    "https://cal.com/optimion/30min?embed=true&theme=dark&backgroundColor=transparent&primaryColor=22d3ee&textColor=e5e7eb&layout=month_view";
+
   return (
     <section
       id="why-optimion"
       className="
         section-fade relative w-full
         px-6 md:px-16
-        pt-10 pb-16 md:py-24     /* ⬅️ tighter top/bottom on mobile */
+        pt-10 pb-16 md:py-24
         overflow-visible
         flex flex-col md:flex-row items-center justify-between gap-12
       "
@@ -256,13 +261,11 @@ export default function WhyOptimion() {
         viewport={{ once: true }}
       />
 
-      {/* Calendly Modal (styled) */}
-      <CalendlyModal
+      {/* Modal (Cal.com) */}
+      <CalDotComModal
         open={calOpen}
-        isOpen={calOpen}
         onClose={() => setCalOpen(false)}
-        url="https://calendly.com/ivan-optimion/30min"
-        title="Book a free consult"
+        url={calUrl}
       />
     </section>
   );

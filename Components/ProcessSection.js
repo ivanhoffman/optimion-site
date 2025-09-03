@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { PhoneCall, Cog, Rocket } from "lucide-react";
-import CalendlyModal from "@/Components/CalendlyModal"; // ← added
+import CalDotComModal from "@/Components/CalDotComModal"; // ← swapped from CalendlyModal
 
 const steps = [
   {
@@ -30,20 +30,23 @@ const cardVariants = {
     scale: 1,
     boxShadow: "0 0 0 rgba(0,0,0,0)",
     borderColor: "rgba(38,38,38,1)", // neutral-800
-    transition: { duration: 0.2, ease: "easeOut" }, // <-- smooth out
+    transition: { duration: 0.2, ease: "easeOut" },
   },
   hover: {
     y: -8,
     scale: 1.03,
     boxShadow: "0 8px 25px rgba(0, 200, 255, 0.25)",
     borderColor: "rgba(34,211,238,0.9)", // cyan
-    transition: { duration: 0 }, // <-- instant in
+    transition: { duration: 0 }, // instant in
   },
 };
 
 export default function ProcessSection() {
-  // Calendly modal state (local to this section)
   const [calOpen, setCalOpen] = useState(false);
+
+  // Cal.com event URL: transparent background, your brand colors, embedded
+  const calUrl =
+    "https://cal.com/optimion/30min?embed=true&theme=dark&backgroundColor=transparent&primaryColor=22d3ee&textColor=e5e7eb&layout=month_view";
 
   return (
     <section id="process" className="section-fade relative w-full px-6 md:px-16 py-24 text-white">
@@ -78,7 +81,6 @@ export default function ProcessSection() {
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: i * 0.08 }}
               variants={cardVariants}
-              initial="rest"
               animate="rest"
               whileHover="hover"
               className="relative rounded-xl border border-neutral-800 bg-black/20 p-6"
@@ -109,7 +111,7 @@ export default function ProcessSection() {
       >
         <button
           type="button"
-          onClick={() => setCalOpen(true)} // ← open Calendly modal
+          onClick={() => setCalOpen(true)}
           className="inline-flex items-center justify-center px-6 py-3 rounded-md text-white bg-gradient-to-r from-cyan-500 to-pink-500 hover:brightness-110 transition shadow-md"
           aria-haspopup="dialog"
           aria-expanded={calOpen ? "true" : "false"}
@@ -118,18 +120,8 @@ export default function ProcessSection() {
         </button>
       </motion.div>
 
-      {/* Calendly Modal */}
-      <CalendlyModal
-        open={calOpen}
-        isOpen={calOpen} // (defensive) supports either prop name
-        onClose={() => setCalOpen(false)}
-        url="https://calendly.com/ivan-optimion/30min"
-        colors={{
-          background: "#0b0b0d",
-          text: "#e5e7eb",
-          primary: "#22d3ee",
-        }}
-      />
+      {/* Modal (Cal.com) */}
+      <CalDotComModal open={calOpen} onClose={() => setCalOpen(false)} url={calUrl} />
     </section>
   );
 }
