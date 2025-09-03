@@ -158,6 +158,10 @@ function ScheduleCard({ onOpenCalendly }) {
       <div className="text-xs text-gray-400 mt-1 flex items-center gap-1">
         <Clock className="w-3.5 h-3.5" /> 30 minutes • Strategy & next steps
       </div>
+      {/* Risk-reducer microcopy */}
+      <div className="mt-1 text-[11px] text-gray-400 leading-snug">
+        No sales pitch—leave with a concrete plan or we’ll point you to a better fit.
+      </div>
 
       <div className="mt-4 grid grid-cols-1 gap-2">
         {slots.map((d, i) => (
