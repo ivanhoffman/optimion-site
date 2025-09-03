@@ -5,6 +5,8 @@ import { useEffect, useRef } from "react";
 
 /**
  * A stylized modal that hosts Calendly's inline widget.
+ * Keeps glass UI; enforces dark background fallback (#0b0b0d).
+ *
  * Props:
  *  - open: boolean
  *  - onClose: () => void
@@ -23,13 +25,16 @@ export default function CalendlyModal({
 }) {
   const containerRef = useRef(null);
 
-  // Build a URL with Calendly color params
+  // Build a URL with Calendly color + cleanup params
   const themedUrl = (() => {
     const params = new URLSearchParams({
       background_color: stripHash(colors.background),
       text_color: stripHash(colors.text),
       primary_color: stripHash(colors.primary),
       hide_gdpr_banner: "1",
+      hide_landing_page_details: "1",
+      hide_event_type_details: "1",
+      embed_type: "Inline",
     });
     return `${url}${url.includes("?") ? "&" : "?"}${params.toString()}`;
   })();
@@ -46,15 +51,43 @@ export default function CalendlyModal({
       document.head.appendChild(link);
     }
 
+    // Helper: enforce dark backdrop around/in the iframe element (not inside)
+    const enforceDarkShell = () => {
+      if (!containerRef.current) return;
+      // Dark behind the iframe
+      containerRef.current.style.background = colors.background;
+      containerRef.current.style.setProperty("background", colors.background, "important");
+
+      // Dark on the iframe element itself (prevents white gutters)
+      const iframe = containerRef.current.querySelector('iframe[src*="calendly.com"]');
+      if (iframe) {
+        iframe.style.background = colors.background;
+        iframe.style.display = "block";
+        iframe.style.width = "100%";
+        iframe.style.height = "100%";
+        iframe.style.border = "0";
+        iframe.style.borderRadius = "0";
+      }
+    };
+
     // Ensure Calendly script, then init inline widget
     const initInline = () => {
       if (!containerRef.current) return;
       // Clear any previous iframe
       containerRef.current.innerHTML = "";
+      // Make sure our shell is dark before Calendly paints
+      enforceDarkShell();
+
       window.Calendly?.initInlineWidget?.({
         url: themedUrl,
         parentElement: containerRef.current,
       });
+
+      // Watch for Calendly injecting/replacing the iframe
+      const obs = new MutationObserver(enforceDarkShell);
+      obs.observe(containerRef.current, { childList: true, subtree: true });
+      // Store observer for cleanup
+      containerRef.current.__calObs = obs;
     };
 
     const existing = document.getElementById("calendly-widget-script");
@@ -72,10 +105,14 @@ export default function CalendlyModal({
     }
 
     return () => {
-      // Optional cleanup: remove iframe contents
-      if (containerRef.current) containerRef.current.innerHTML = "";
+      // Cleanup: remove iframe + disconnect observer
+      if (containerRef.current) {
+        containerRef.current.innerHTML = "";
+        containerRef.current.__calObs?.disconnect?.();
+        delete containerRef.current.__calObs;
+      }
     };
-  }, [open, themedUrl]);
+  }, [open, themedUrl, colors.background]);
 
   if (!open) return null;
 
@@ -106,8 +143,12 @@ export default function CalendlyModal({
             ✕
           </button>
 
-          {/* Calendly inline container */}
-          <div ref={containerRef} className="w-full h-full" />
+          {/* Calendly inline container (we also paint it dark as a fallback) */}
+          <div
+            ref={containerRef}
+            className="w-full h-full"
+            style={{ background: colors.background }}
+          />
         </div>
       </div>
     </div>
