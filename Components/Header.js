@@ -3,6 +3,7 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import CalDotComModal from "@/Components/CalDotComModal"; // ⟵ swapped from CalendlyModal
 import { CalendarDays } from "lucide-react";
 
@@ -45,12 +46,10 @@ function NavLink({ id, children, className = "" }) {
     if (window.location.pathname === "/") {
       e.preventDefault();
       const newHash = `#${id}`;
-      // If the hash is already the same, force the handler to run
       if (window.location.hash === newHash) {
-        // trigger the handler manually
         window.dispatchEvent(new HashChangeEvent("hashchange"));
       } else {
-        window.location.hash = newHash; // will fire hashchange
+        window.location.hash = newHash;
       }
     }
   };
@@ -93,10 +92,17 @@ export default function Header({ variant = "site" }) {
 
       <header className="sticky top-0 z-50 bg-black/40 backdrop-blur-md border-b border-white/10">
         <div className="mx-auto max-w-7xl px-6 md:px-16 h-14 flex items-center justify-between">
-          <Link href="/" scroll={false} className="font-semibold tracking-tight">
-            <span className="bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-500 bg-clip-text text-transparent">
-              Optimion
-            </span>
+          {/* Logo (same visual footprint as current text) */}
+          <Link href="/" scroll={false} aria-label="Optimion home" className="flex items-center">
+            <Image
+              src={"/Optimi logo 2025 (10).png"}
+              alt="Optimion"
+              width={120}
+              height={28}
+              priority
+              draggable={false}
+              className="h-6 md:h-7 w-auto select-none"
+            />
           </Link>
 
           {showNav && (
@@ -128,11 +134,7 @@ export default function Header({ variant = "site" }) {
       </header>
 
       {/* New modal (Cal.com) – UI unchanged */}
-      <CalDotComModal
-        open={calOpen}
-        onClose={() => setCalOpen(false)}
-        url={calUrl}
-      />
+      <CalDotComModal open={calOpen} onClose={() => setCalOpen(false)} url={calUrl} />
     </>
   );
 }
