@@ -46,6 +46,10 @@ export default function Footer() {
               href="tel:+19545430779"
               className="inline-flex items-center gap-2 rounded-md border border-white/10 px-3 py-1.5 hover:bg-white/5 hover:border-white/20 focus:outline-none focus:ring-2 focus:ring-white/20"
               aria-label="Call Optimion at (954) 543-0779"
+              data-evt="contact_click"        /* analytics */
+              data-method="phone"
+              data-to="+19545430779"
+              data-place="footer"
             >
               <PhoneIcon className="w-4 h-4 opacity-80" />
               <span>(954) 543-0779</span>
@@ -55,6 +59,10 @@ export default function Footer() {
               href="mailto:hello@optimion.us"
               className="inline-flex items-center gap-2 rounded-md border border-white/10 px-3 py-1.5 hover:bg-white/5 hover:border-white/20 focus:outline-none focus:ring-2 focus:ring-white/20"
               aria-label="Email Optimion at hello@optimion.us"
+              data-evt="contact_click"        /* analytics */
+              data-method="email"
+              data-to="hello@optimion.us"
+              data-place="footer"
             >
               <MailIcon className="w-4 h-4 opacity-80" />
               <span>hello@optimion.us</span>
@@ -65,11 +73,17 @@ export default function Footer() {
         {/* RIGHT: Links + copyright (right-aligned on desktop) */}
         <div className="md:col-span-4 w-full">
           <div className="flex justify-center md:justify-end items-center gap-4 text-gray-400">
-            <Link href="/privacy" className="hover:text-white">Privacy</Link>
+            <Link href="/privacy" className="hover:text-white" data-evt="nav_click" data-place="footer" data-to="/privacy">
+              Privacy
+            </Link>
             <span className="hidden md:inline text-gray-600">•</span>
-            <Link href="/terms" className="hover:text-white">Terms</Link>
+            <Link href="/terms" className="hover:text-white" data-evt="nav_click" data-place="footer" data-to="/terms">
+              Terms
+            </Link>
             <span className="hidden md:inline text-gray-600">•</span>
-            <Link href="/#faq" className="hover:text-white" prefetch={false}>FAQ</Link>
+            <Link href="/#faq" className="hover:text-white" prefetch={false} data-evt="nav_click" data-place="footer" data-to="/#faq">
+              FAQ
+            </Link>
           </div>
 
           <div className="mt-2 text-center md:text-right text-gray-500">

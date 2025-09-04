@@ -191,13 +191,21 @@ export default function LogoWallSection() {
           className="inline-flex items-center justify-center px-4 py-2 rounded-md bg-gradient-to-r from-cyan-500 to-pink-500 text-white text-sm hover:brightness-110 transition shadow-md"
           aria-haspopup="dialog"
           aria-expanded={calOpen ? "true" : "false"}
+          /* analytics */
+          data-evt="cta_click"
+          data-place="integrations"
         >
           See your stack → Book a free consult
         </button>
       </div>
 
       {/* Modal (Cal.com) */}
-      <CalDotComModal open={calOpen} onClose={() => setCalOpen(false)} url={calUrl} />
+      <CalDotComModal
+        open={calOpen}
+        onClose={() => setCalOpen(false)}
+        url={calUrl}
+        place="integrations"
+      />
     </section>
   );
 }

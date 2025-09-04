@@ -14,6 +14,7 @@ import {
   Layers,
 } from "lucide-react";
 import CalDotComModal from "@/Components/CalDotComModal"; // switched to Cal.com modal
+import { gaEvent } from "@/lib/gtag"; // <-- NEW: analytics helper
 
 const faqs = [
   {
@@ -103,7 +104,14 @@ export default function FAQSection() {
                 id={buttonId}
                 aria-controls={panelId}
                 aria-expanded={isOpen}
-                onClick={() => setOpen(isOpen ? -1 : i)}
+                onClick={() => {
+                  const willOpen = !isOpen;
+                  setOpen(willOpen ? i : -1);
+                  if (willOpen) {
+                    // fire only when opening
+                    gaEvent("faq_open", { question: f.q });
+                  }
+                }}
                 className="w-full text-left px-5 py-4 flex items-center gap-3 hover:bg-white/5 rounded-xl"
               >
                 <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 bg-white/5">
@@ -153,13 +161,20 @@ export default function FAQSection() {
           className="inline-flex items-center justify-center px-4 py-2 rounded-md bg-gradient-to-r from-cyan-500 to-pink-500 text-white text-sm hover:brightness-110 transition shadow-md"
           aria-haspopup="dialog"
           aria-expanded={calOpen ? "true" : "false"}
+          data-evt="cta_click"     // <-- picked up by global listener
+          data-place="faq"         // <-- context for the CTA location
         >
           Ask us on a quick call
         </button>
       </motion.div>
 
       {/* Modal (Cal.com) */}
-      <CalDotComModal open={calOpen} onClose={() => setCalOpen(false)} url={calUrl} />
+      <CalDotComModal
+        open={calOpen}
+        onClose={() => setCalOpen(false)}
+        url={calUrl}
+        place="faq"           // <-- context for cal_open/cal_loaded/cal_close
+      />
     </section>
   );
 }

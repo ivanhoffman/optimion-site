@@ -3,16 +3,25 @@
 
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
+import { gaEvent } from "@/lib/gtag"; // <-- analytics helper
 
 export default function CalDotComModal({
   open,
   onClose,
   url = "https://cal.com/optimion/30min?embed=true&theme=dark&backgroundColor=transparent&primaryColor=22d3ee&textColor=e5e7eb&layout=month_view",
+  place = "unknown",          // where this modal was opened from (e.g., "about", "header")
+  trackOpen = true,           // set to false if the opener already sent cal_open
 }) {
   const [mounted, setMounted] = useState(false); // panel fade-in
   const [loaded, setLoaded] = useState(false);   // iframe fade-in after load
 
-  // Lock body scroll while modal is open (prevents background bleed/stacking issues)
+  // Close helper that also logs analytics
+  const closeAndTrack = () => {
+    gaEvent("cal_close", { place });
+    onClose?.();
+  };
+
+  // Lock body scroll while modal is open + analytics: cal_open
   useEffect(() => {
     if (!open || typeof window === "undefined") return;
 
@@ -25,11 +34,14 @@ export default function CalDotComModal({
     body.style.overflow = "hidden";
     if (scrollbar > 0) body.style.paddingRight = `${scrollbar}px`;
 
-    const onKeyDown = (e) => e.key === "Escape" && onClose?.();
+    const onKeyDown = (e) => e.key === "Escape" && closeAndTrack();
     window.addEventListener("keydown", onKeyDown);
 
     // trigger panel fade-in on mount
     setMounted(true);
+
+    // track the open
+    if (trackOpen) gaEvent("cal_open", { place });
 
     return () => {
       body.style.overflow = prevOverflow;
@@ -38,13 +50,50 @@ export default function CalDotComModal({
       setMounted(false);
       setLoaded(false);
     };
-  }, [open, onClose]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]); // depends only on `open` so it runs each time modal opens
+
+  // Listen for Cal.com booking completion messages while the modal is open
+  useEffect(() => {
+    if (!open || typeof window === "undefined") return;
+
+    const onMessage = (e) => {
+      try {
+        const host = new URL(e.origin).hostname;
+        // accept "cal.com" and any subdomain (e.g., embed-1.cal.com)
+        const originOk = /(^|\.)cal\.com$/.test(host);
+        if (!originOk) return;
+
+        const payload = e.data;
+        const str = typeof payload === "string" ? payload : JSON.stringify(payload);
+
+        // Heuristic match for Cal.com booking completion
+        const booked =
+          /book(ed|ing)|schedul(ed|e)/i.test(str) &&
+          /(success|complete|confirm)/i.test(str);
+
+        if (booked) {
+          // Fire both names so either GTM trigger catches it
+          gaEvent("cal_booking_success", { place });
+          gaEvent("booked_consult", { place });
+        }
+      } catch {
+        // ignore parsing errors
+      }
+    };
+
+    window.addEventListener("message", onMessage);
+    return () => window.removeEventListener("message", onMessage);
+  }, [open, place]);
 
   if (!open || typeof window === "undefined") return null;
 
   // Small delay after iframe 'load' lets Cal render the timeslots before we reveal it
   const handleIframeLoad = () => {
-    setTimeout(() => setLoaded(true), 250);
+    setTimeout(() => {
+      setLoaded(true);
+      gaEvent("cal_loaded", { place });
+    }, 250);
   };
 
   const modal = (
@@ -53,7 +102,7 @@ export default function CalDotComModal({
       <button
         type="button"
         aria-label="Close"
-        onClick={onClose}
+        onClick={closeAndTrack}
         className={`absolute inset-0 bg-black/65 backdrop-blur-sm transition-opacity duration-300 ${
           mounted ? "opacity-100" : "opacity-0"
         }`}
@@ -75,7 +124,7 @@ export default function CalDotComModal({
         >
           {/* Close button */}
           <button
-            onClick={onClose}
+            onClick={closeAndTrack}
             className="absolute top-2 right-2 z-10 inline-flex h-9 w-9 items-center justify-center rounded-md
                        bg-white/5 hover:bg-white/10 border border-white/10 text-gray-200"
             aria-label="Close scheduling modal"

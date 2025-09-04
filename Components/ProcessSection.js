@@ -115,13 +115,21 @@ export default function ProcessSection() {
           className="inline-flex items-center justify-center px-6 py-3 rounded-md text-white bg-gradient-to-r from-cyan-500 to-pink-500 hover:brightness-110 transition shadow-md"
           aria-haspopup="dialog"
           aria-expanded={calOpen ? "true" : "false"}
+          /* analytics */
+          data-evt="cta_click"
+          data-place="process"
         >
           Schedule Your Free Consultation
         </button>
       </motion.div>
 
       {/* Modal (Cal.com) */}
-      <CalDotComModal open={calOpen} onClose={() => setCalOpen(false)} url={calUrl} />
+      <CalDotComModal
+        open={calOpen}
+        onClose={() => setCalOpen(false)}
+        url={calUrl}
+        place="process"
+      />
     </section>
   );
 }

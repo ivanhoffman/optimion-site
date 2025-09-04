@@ -261,6 +261,8 @@ export default function HeroSection() {
           transition={{ delay: 0.6, duration: 0.6 }}
           viewport={{ once: true }}
           className="group inline-flex items-center gap-2 px-5 py-3 bg-neutral-900 hover:bg-neutral-800 text-white border border-neutral-700 rounded-md text-sm transition-colors"
+          data-evt="cta_click"
+          data-place="hero"
         >
           Book a Free Call
           <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
@@ -273,7 +275,7 @@ export default function HeroSection() {
       </div>
 
       {/* New modal (Cal.com) – UI unchanged */}
-      <CalDotComModal open={showCal} onClose={() => setShowCal(false)} url={calUrl} />
+      <CalDotComModal open={showCal} onClose={() => setShowCal(false)} url={calUrl} place="hero" />
     </section>
   );
 }

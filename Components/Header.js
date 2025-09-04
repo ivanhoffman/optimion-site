@@ -54,7 +54,16 @@ function NavLink({ id, children, className = "" }) {
     }
   };
   return (
-    <Link href={href} scroll={false} onClick={onClick} className={className}>
+    <Link
+      href={href}
+      scroll={false}
+      onClick={onClick}
+      className={className}
+      /* analytics */
+      data-evt="nav_click"
+      data-place="header"
+      data-to={href}
+    >
       {children}
     </Link>
   );
@@ -93,7 +102,16 @@ export default function Header({ variant = "site" }) {
       <header className="sticky top-0 z-50 bg-black/40 backdrop-blur-md border-b border-white/10">
         <div className="mx-auto max-w-7xl px-6 md:px-16 h-14 flex items-center justify-between">
           {/* Logo (same visual footprint as current text) */}
-          <Link href="/" scroll={false} aria-label="Optimion home" className="flex items-center">
+          <Link
+            href="/"
+            scroll={false}
+            aria-label="Optimion home"
+            className="flex items-center"
+            /* analytics */
+            data-evt="nav_click"
+            data-place="header"
+            data-to="/"
+          >
             <Image
               src={"/Optimi logo 2025 (10).png"}
               alt="Optimion"
@@ -125,6 +143,9 @@ export default function Header({ variant = "site" }) {
               className="inline-flex items-center gap-2 px-3.5 py-2 rounded-md bg-gradient-to-r from-cyan-500 to-pink-500 text-white text-sm font-medium shadow-md hover:brightness-110 transition"
               aria-haspopup="dialog"
               aria-expanded={calOpen ? "true" : "false"}
+              /* analytics */
+              data-evt="cta_click"
+              data-place="header"
             >
               <CalendarDays className="w-4 h-4" />
               Free Consult
@@ -134,7 +155,13 @@ export default function Header({ variant = "site" }) {
       </header>
 
       {/* New modal (Cal.com) – UI unchanged */}
-      <CalDotComModal open={calOpen} onClose={() => setCalOpen(false)} url={calUrl} />
+      <CalDotComModal
+        open={calOpen}
+        onClose={() => setCalOpen(false)}
+        url={calUrl}
+        /* analytics context for cal_* events */
+        place="header"
+      />
     </>
   );
 }

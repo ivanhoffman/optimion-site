@@ -8,6 +8,7 @@ import CalDotComModal from "@/Components/CalDotComModal";
 
 export default function FinalCTASection() {
   const [calOpen, setCalOpen] = useState(false);
+  const [modalPlace, setModalPlace] = useState("final_primary"); // NEW: context for analytics
 
   // Cal.com event URL with dark theme + transparent background (keeps glass UI clean)
   const calUrl =
@@ -57,10 +58,15 @@ export default function FinalCTASection() {
             <div className="flex flex-wrap items-center gap-3">
               <button
                 type="button"
-                onClick={() => setCalOpen(true)}
+                onClick={() => {
+                  setModalPlace("final_primary"); // NEW
+                  setCalOpen(true);
+                }}
                 className="inline-flex items-center gap-2 px-5 py-3 rounded-md bg-gradient-to-r from-cyan-500 to-pink-500 text-white font-medium hover:brightness-110 transition shadow-md"
                 aria-haspopup="dialog"
                 aria-expanded={calOpen ? "true" : "false"}
+                data-evt="cta_click"         // NEW: global listener
+                data-place="final_primary"    // NEW: where this CTA lives
               >
                 <CalendarDays className="w-4 h-4" />
                 Schedule Your Free Consultation
@@ -95,17 +101,27 @@ export default function FinalCTASection() {
       <div className="md:hidden sticky bottom-4 mt-6">
         <button
           type="button"
-          onClick={() => setCalOpen(true)}
+          onClick={() => {
+            setModalPlace("final_sticky"); // NEW
+            setCalOpen(true);
+          }}
           className="block text-center mx-auto max-w-[520px] px-5 py-3 rounded-md bg-gradient-to-r from-cyan-500 to-pink-500 text-white font-medium shadow-lg hover:brightness-110 transition"
           aria-haspopup="dialog"
           aria-expanded={calOpen ? "true" : "false"}
+          data-evt="cta_click"        // NEW
+          data-place="final_sticky"   // NEW
         >
           Book your free consult
         </button>
       </div>
 
       {/* Modal (Cal.com) */}
-      <CalDotComModal open={calOpen} onClose={() => setCalOpen(false)} url={calUrl} />
+      <CalDotComModal
+        open={calOpen}
+        onClose={() => setCalOpen(false)}
+        url={calUrl}
+        place={modalPlace} // NEW: ensures cal_* events include the CTA source
+      />
     </section>
   );
 }

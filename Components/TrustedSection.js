@@ -172,6 +172,8 @@ export default function TrustedSection() {
           className="inline-flex items-center justify-center px-6 py-3 rounded-md text-white bg-gradient-to-r from-cyan-500 to-pink-500 hover:brightness-110 transition shadow-md"
           aria-haspopup="dialog"
           aria-expanded={calOpen ? "true" : "false"}
+          data-evt="cta_click"
+          data-place="testimonials"
         >
           Book a Free Consultation
         </button>
@@ -182,6 +184,7 @@ export default function TrustedSection() {
         open={calOpen}
         onClose={() => setCalOpen(false)}
         url={calUrl}
+        place="testimonials"
       />
     </section>
   );
