@@ -4,7 +4,8 @@
 import React, { useId, useState } from "react";
 import { motion } from "framer-motion";
 import { CheckCircle } from "lucide-react";
-import CalDotComModal from "@/Components/CalDotComModal"; // ⟵ swapped from CalendlyModal
+import CalDotComModal from "@/Components/CalDotComModal";
+import { gaEvent } from "@/lib/gtag"; // <-- analytics helper
 
 /**
  * Flowchart with guaranteed-visible stems + wrapped diamond labels +
@@ -16,6 +17,12 @@ export default function AboutSection() {
   // Cal.com event URL (transparent, dark, your brand colors)
   const calUrl =
     "https://cal.com/optimion/30min?embed=true&theme=dark&backgroundColor=transparent&primaryColor=22d3ee&textColor=e5e7eb&layout=month_view";
+
+  const openCal = () => {
+    setCalOpen(true);
+    // Track the modal opening explicitly
+    gaEvent("cal_open", { place: "about" });
+  };
 
   return (
     <section
@@ -71,7 +78,7 @@ export default function AboutSection() {
 
         <motion.button
           type="button"
-          onClick={() => setCalOpen(true)}
+          onClick={openCal}
           initial={{ opacity: 0, y: 14 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.45, delay: 0.25 }}
@@ -79,6 +86,9 @@ export default function AboutSection() {
           className="px-6 py-3 bg-gradient-to-r from-cyan-500 to-pink-500 text-white rounded-md shadow-md hover:brightness-110 transition"
           aria-haspopup="dialog"
           aria-expanded={calOpen ? "true" : "false"}
+          // Global listener picks this up as a separate cta_click event
+          data-evt="cta_click"
+          data-place="about"
         >
           Schedule Your Free Consultation
         </motion.button>

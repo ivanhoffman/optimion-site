@@ -5,6 +5,7 @@ import { useRouter } from "next/router";
 import Script from "next/script";
 import Header from "@/Components/Header";
 import Footer from "@/Components/Footer";
+import { gaEvent } from "@/lib/gtag"; // <-- uses your gtag helper
 
 // Use env var if present, fall back to your GTM container ID
 const GTM_ID = process.env.NEXT_PUBLIC_GTM_ID || "GTM-PQJFJPTW";
@@ -48,6 +49,45 @@ export default function App({ Component, pageProps }) {
     router.events.on("routeChangeComplete", handleRouteChange);
     return () => router.events.off("routeChangeComplete", handleRouteChange);
   }, [router.events]);
+
+  // Global listener: any element with data-evt="..." auto-sends via gaEvent
+  useEffect(() => {
+    const onClick = (e) => {
+      const el = e.target.closest?.("[data-evt]");
+      if (!el) return;
+
+      // dataset => { evt: 'cta_click', place: 'hero', ... }
+      const { evt, ...rest } = el.dataset;
+      const action = evt || "interaction";
+      const params = { ...rest };
+
+      // coerce numeric-looking strings to numbers (helps in GA4)
+      Object.keys(params).forEach((k) => {
+        const v = params[k];
+        if (typeof v === "string" && v.trim() !== "" && !isNaN(Number(v))) {
+          params[k] = Number(v);
+        }
+      });
+
+      gaEvent(action, params);
+    };
+
+    // Track <details data-evt="faq_open" ...> when it opens
+    const onToggle = (e) => {
+      const el = e.target;
+      if (el?.matches?.('details[data-evt]') && el.open) {
+        const { evt, ...rest } = el.dataset;
+        gaEvent(evt || "details_open", { ...rest });
+      }
+    };
+
+    document.addEventListener("click", onClick, true);
+    document.addEventListener("toggle", onToggle, true);
+    return () => {
+      document.removeEventListener("click", onClick, true);
+      document.removeEventListener("toggle", onToggle, true);
+    };
+  }, []);
 
   return (
     <>

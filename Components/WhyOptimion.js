@@ -171,7 +171,11 @@ function ScheduleCard({ onOpenCalendly }) {
             whileHover={{ y: -2 }}
             whileTap={{ y: 0 }}
             onClick={onOpenCalendly}
-            className="w-full text-left rounded-lg px-3 py-2 border border-white/10 bg-black/30 hover:bg-black/40 text-gray-200 flex items-center justify-between"
+            className="w-full text-left rounded-lg px-3 py-2 border border-white/10 bg-black/30 hover:bg_black/40 text-gray-200 flex items-center justify-between"
+            /* analytics */
+            data-evt="cta_click"
+            data-place="why"
+            aria-haspopup="dialog"
           >
             <span className="text-[13px]">
               <span className="text-white">{dayLabel(d)}</span> · {formatAMPM(d)}
@@ -185,7 +189,11 @@ function ScheduleCard({ onOpenCalendly }) {
         type="button"
         onClick={onOpenCalendly}
         whileHover={{ y: -1 }}
-        className="mt-4 inline-flex items-center justify-center w-full rounded-md px-3 py-2 text-sm text-white bg-gradient-to-r from-cyan-500 to-pink-500 hover:brightness-110"
+        className="mt-4 inline-flex items-center justify_center w-full rounded-md px-3 py-2 text-sm text-white bg-gradient-to-r from-cyan-500 to-pink-500 hover:brightness-110"
+        /* analytics */
+        data-evt="cta_click"
+        data-place="why"
+        aria-haspopup="dialog"
       >
         See all times
       </motion.button>
@@ -214,7 +222,7 @@ export default function WhyOptimion() {
     >
       {/* Left: Text Content */}
       <motion.div
-        className="max-w-xl z-10 text-white"
+        className="max-w-xl z-10 text_white"
         initial={{ opacity: 0, y: 40 }}
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
@@ -270,6 +278,7 @@ export default function WhyOptimion() {
         open={calOpen}
         onClose={() => setCalOpen(false)}
         url={calUrl}
+        place="why"
       />
     </section>
   );
