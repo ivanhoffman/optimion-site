@@ -32,8 +32,8 @@ export default function Footer() {
   return (
     <footer className="mt-16 border-t border-white/10 bg-black/40">
       <div className="mx-auto max-w-7xl px-6 md:px-16 py-8 text-sm text-gray-300 grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-8 items-start">
-        {/* LEFT: Brand + microcopy + contact chips */}
-        <div className="md:col-span-8 text-center md:text-left">
+        {/* LEFT (9/12): Brand + microcopy + contact chips */}
+        <div className="md:col-span-9 text-center md:text-left">
           <div className="font-semibold text-white">Optimion</div>
           <div className="text-gray-400 mt-1">CRM • Automation • Integration</div>
 
@@ -62,18 +62,17 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* RIGHT: Links + copyright (right-aligned on desktop) */}
-        <div className="md:col-span-4 w-full">
-          <div className="flex justify-center md:justify-end items-center gap-4 text-gray-400">
-            <Link href="/privacy" className="hover:text-white">Privacy</Link>
-            <span className="hidden md:inline text-gray-600">•</span>
-            <Link href="/terms" className="hover:text-white">Terms</Link>
-            <span className="hidden md:inline text-gray-600">•</span>
-            <Link href="/#faq" className="hover:text-white" prefetch={false}>FAQ</Link>
-          </div>
-
-          <div className="mt-2 text-center md:text-right text-gray-500">
-            © {year} Optimion. All rights reserved.
+        {/* RIGHT (3/12): Links + copyright in one row on desktop */}
+        <div className="md:col-span-3 w-full">
+          <div className="flex flex-col md:flex-row md:justify-end md:items-center gap-2 md:gap-6 text-center md:text-right">
+            <nav className="flex justify-center md:justify-end items-center gap-4 text-gray-400">
+              <Link href="/privacy" className="hover:text-white">Privacy</Link>
+              <span className="hidden md:inline text-gray-600">•</span>
+              <Link href="/terms" className="hover:text-white">Terms</Link>
+              <span className="hidden md:inline text-gray-600">•</span>
+              <Link href="/#faq" className="hover:text-white" prefetch={false}>FAQ</Link>
+            </nav>
+            <div className="text-gray-500">© {year} Optimion. All rights reserved.</div>
           </div>
         </div>
       </div>
