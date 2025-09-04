@@ -1,23 +1,52 @@
 // Components/CalDotComModal.js
 "use client";
 
+import { useEffect } from "react";
+import { createPortal } from "react-dom";
+
 export default function CalDotComModal({
   open,
   onClose,
   url = "https://cal.com/optimion/30min?embed=true&theme=dark&backgroundColor=transparent&primaryColor=22d3ee&textColor=e5e7eb&layout=month_view",
 }) {
-  if (!open) return null;
+  // Lock body scroll while modal is open (prevents background bleed/stacking issues)
+  useEffect(() => {
+    if (!open || typeof window === "undefined") return;
 
-  return (
-    <div className="fixed inset-0 z-[1000]" aria-modal="true" role="dialog">
+    const { body, documentElement } = document;
+    const prevOverflow = body.style.overflow;
+    const prevPaddingRight = body.style.paddingRight;
+
+    // prevent layout shift when scrollbar disappears
+    const scrollbar = window.innerWidth - documentElement.clientWidth;
+    body.style.overflow = "hidden";
+    if (scrollbar > 0) body.style.paddingRight = `${scrollbar}px`;
+
+    const onKeyDown = (e) => {
+      if (e.key === "Escape") onClose?.();
+    };
+    window.addEventListener("keydown", onKeyDown);
+
+    return () => {
+      body.style.overflow = prevOverflow;
+      body.style.paddingRight = prevPaddingRight;
+      window.removeEventListener("keydown", onKeyDown);
+    };
+  }, [open, onClose]);
+
+  if (!open || typeof window === "undefined") return null;
+
+  const modal = (
+    <div className="fixed inset-0 z-[9999]" aria-modal="true" role="dialog">
       {/* Backdrop */}
       <button
+        type="button"
         aria-label="Close"
         onClick={onClose}
         className="absolute inset-0 bg-black/65 backdrop-blur-sm"
       />
 
-      {/* Your glass shell */}
+      {/* Glass shell */}
       <div className="absolute inset-0 flex items-center justify-center p-4">
         <div
           className="relative w-full max-w-[960px] h-[82vh] rounded-2xl border border-white/10 bg-neutral-950/90 shadow-2xl overflow-hidden
@@ -37,7 +66,7 @@ export default function CalDotComModal({
           <iframe
             title="Schedule"
             src={url}
-            className="w-full h-full block"
+            className="block h-full w-full"
             style={{ background: "transparent" }}
             allow="camera; microphone; fullscreen; geolocation"
             frameBorder="0"
@@ -46,4 +75,7 @@ export default function CalDotComModal({
       </div>
     </div>
   );
+
+  // Render at document.body so it isn’t clipped by parent stacking contexts
+  return createPortal(modal, document.body);
 }
