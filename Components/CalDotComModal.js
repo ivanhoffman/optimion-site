@@ -1,7 +1,7 @@
 // Components/CalDotComModal.js
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { gaEvent } from "@/lib/gtag"; // <-- analytics helper
 
@@ -9,11 +9,12 @@ export default function CalDotComModal({
   open,
   onClose,
   url = "https://cal.com/optimion/30min?embed=true&theme=dark&backgroundColor=transparent&primaryColor=22d3ee&textColor=e5e7eb&layout=month_view",
-  place = "unknown",          // where this modal was opened from (e.g., "about", "header")
-  trackOpen = true,           // set to false if the opener already sent cal_open
+  place = "unknown", // where this modal was opened from (e.g., "about", "header")
+  trackOpen = true,  // set to false if the opener already sent cal_open
 }) {
   const [mounted, setMounted] = useState(false); // panel fade-in
   const [loaded, setLoaded] = useState(false);   // iframe fade-in after load
+  const bookedOnce = useRef(false);              // prevent double-fire per open
 
   // Close helper that also logs analytics
   const closeAndTrack = () => {
@@ -57,6 +58,9 @@ export default function CalDotComModal({
   useEffect(() => {
     if (!open || typeof window === "undefined") return;
 
+    // allow a new completion for each time the modal opens
+    bookedOnce.current = false;
+
     const onMessage = (e) => {
       try {
         const host = new URL(e.origin).hostname;
@@ -72,10 +76,12 @@ export default function CalDotComModal({
           /book(ed|ing)|schedul(ed|e)/i.test(str) &&
           /(success|complete|confirm)/i.test(str);
 
-        if (booked) {
-          // Fire both names so either GTM trigger catches it
-          gaEvent("cal_booking_success", { place });
-          gaEvent("booked_consult", { place });
+        if (booked && !bookedOnce.current) {
+          bookedOnce.current = true;
+
+          // Fire BOTH names so GTM triggers for GA4 and Ads can listen independently
+          gaEvent("booked_consult", { place, source: "cal.com" });       // GA4 event
+          gaEvent("cal_booking_success", { place, source: "cal.com" });  // Google Ads event
         }
       } catch {
         // ignore parsing errors
