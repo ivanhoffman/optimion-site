@@ -59,9 +59,9 @@ export default function PrivacyPage() {
           </p>
 
           {/* Calendly */}
-          <h2 className="mt-10 text-xl font-semibold">Calendly</h2>
+          <h2 className="mt-10 text-xl font-semibold">Cal.com</h2>
           <p className="mt-3 text-gray-300">
-            When you book a meeting through Calendly, your submission is processed by Calendly per their terms and
+            When you book a meeting through Cal.com, your submission is processed by Cal.com per their terms and
             privacy policy. We use the data only to manage your appointment.
           </p>
 
