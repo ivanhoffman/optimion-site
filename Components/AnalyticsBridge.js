@@ -30,7 +30,7 @@ export default function AnalyticsBridge() {
     return () => document.removeEventListener("click", onClick, true);
   }, []);
 
-  // 2) section_view + scroll_depth (reset per route)
+  // 2) section_view + scroll_depth (reset each pageview / route change)
   useEffect(() => {
     // ---------- section_view (once per section per pageview) ----------
     const seenSections = new Set();
@@ -44,13 +44,12 @@ export default function AnalyticsBridge() {
           const name = sectionName(entry.target);
           if (seenSections.has(name)) return;
           seenSections.add(name);
-          // keep as gaEvent since this is already working in your container
+          // sends through your existing GA/GTM bridge
           gaEvent("section_view", { section: name });
         });
       },
       {
-        // fire when roughly half the section is visible
-        threshold: 0.5,
+        threshold: [0, 0.5, 1], // fire when ~50% is visible
         root: null,
         rootMargin: "0px 0px -10% 0px",
       }
@@ -60,74 +59,77 @@ export default function AnalyticsBridge() {
       document.querySelectorAll("section[id]").forEach((s) => sectionObserver.observe(s));
     };
 
-    // observe immediately and once more after layout settles
     scanSections();
-    const lateScan = setTimeout(scanSections, 400);
+    const lateScan = setTimeout(scanSections, 400); // in case late content mounts
 
     // ---------- scroll_depth (25/50/75/100 once per pageview) ----------
-    const firedDepths = new Set([/* numbers we’ve sent: 25/50/75/100 */]);
     const marks = [25, 50, 75, 100];
+    const fired = new Set();
 
-    // Push to GTM dataLayer so your CE — scroll_depth trigger fires
-    const dlPush = (eventName, params = {}) => {
+    // push to GTM so CE — scroll_depth triggers your GA4 tag
+    const pushDepth = (m) => {
       window.dataLayer = window.dataLayer || [];
-      window.dataLayer.push({ event: eventName, ...params });
+      window.dataLayer.push({ event: "scroll_depth", percent: m });
     };
 
-    // Percent of page reached by the bottom of the viewport
-    const currentPercent = () => {
-      const doc = document.documentElement;
-      const body = document.body;
-
-      const scrollTop =
-        window.pageYOffset || doc.scrollTop || body.scrollTop || 0;
-      const viewport = window.innerHeight;
-
-      const fullHeight = Math.max(
-        body.scrollHeight,
-        body.offsetHeight,
-        doc.clientHeight,
-        doc.scrollHeight,
-        doc.offsetHeight
-      );
-
-      if (fullHeight <= viewport) return 100; // very short pages
-
-      const pct = Math.round(((scrollTop + viewport) / fullHeight) * 100);
+    // % scrolled = scrollTop / (scrollHeight - viewport) * 100
+    const getPct = () => {
+      const se = document.scrollingElement || document.documentElement;
+      const scrollable = Math.max(se.scrollHeight - window.innerHeight, 0);
+      if (scrollable === 0) return 100; // very short page
+      const y = window.scrollY || se.scrollTop || 0;
+      const pct = Math.round((y / scrollable) * 100);
       return Math.max(0, Math.min(100, pct));
     };
 
-    let ticking = false;
-    const fireMarksIfNeeded = () => {
-      const pct = currentPercent();
+    const check = () => {
+      const pct = getPct();
       for (const m of marks) {
-        if (pct >= m && !firedDepths.has(m)) {
-          firedDepths.add(m);
-          // IMPORTANT: send as dataLayer custom event (no gtag here to avoid GA duplicates)
-          dlPush("scroll_depth", { percent: m });
+        if (pct >= m && !fired.has(m)) {
+          fired.add(m);
+          pushDepth(m);
         }
       }
+      if (fired.size === marks.length) stop(); // all done
     };
 
-    const onScrollOrResize = () => {
-      if (ticking) return;
-      ticking = true;
-      requestAnimationFrame(() => {
-        fireMarksIfNeeded();
-        ticking = false;
+    let raf = 0;
+    const onTick = () => {
+      if (raf) return;
+      raf = requestAnimationFrame(() => {
+        raf = 0;
+        check();
       });
     };
 
-    // prime on load + listeners
-    fireMarksIfNeeded();
-    window.addEventListener("scroll", onScrollOrResize, { passive: true });
-    window.addEventListener("resize", onScrollOrResize);
+    // Fallback polling for environments that throttle scroll/resize
+    const poll = setInterval(() => {
+      check();
+      if (fired.size === marks.length) clearInterval(poll);
+    }, 500);
+
+    const stop = () => {
+      window.removeEventListener("scroll", onTick);
+      window.removeEventListener("resize", onTick);
+      window.removeEventListener("hashchange", onTick);
+      window.removeEventListener("pageshow", onTick);
+      document.removeEventListener("visibilitychange", onTick);
+      cancelAnimationFrame(raf);
+      clearInterval(poll);
+    };
+
+    // prime + listeners
+    check();
+    window.addEventListener("scroll", onTick, { passive: true });
+    window.addEventListener("resize", onTick);
+    window.addEventListener("hashchange", onTick);
+    window.addEventListener("pageshow", onTick);
+    document.addEventListener("visibilitychange", onTick);
 
     return () => {
       clearTimeout(lateScan);
       sectionObserver.disconnect();
-      window.removeEventListener("scroll", onScrollOrResize);
-      window.removeEventListener("resize", onScrollOrResize);
+      stop();
     };
   }, [router.asPath]);
 
