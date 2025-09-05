@@ -8,7 +8,7 @@ import { gaEvent } from "@/lib/gtag";
 export default function AnalyticsBridge() {
   const router = useRouter();
 
-  // 1) Your existing [data-evt] click bridge (kept intact)
+  // 1) Global [data-evt] click bridge (unchanged)
   useEffect(() => {
     const onClick = (e) => {
       const el = e.target.closest?.("[data-evt]");
@@ -30,9 +30,9 @@ export default function AnalyticsBridge() {
     return () => document.removeEventListener("click", onClick, true);
   }, []);
 
-  // 2) section_view + scroll_depth (reset each pageview / route change)
+  // 2) section_view + scroll_depth (reset per route)
   useEffect(() => {
-    // ----- section_view (once per section per pageview) -----
+    // ---------- section_view (once per section per pageview) ----------
     const seenSections = new Set();
 
     const sectionName = (el) => el.getAttribute("id") || "unknown";
@@ -44,6 +44,7 @@ export default function AnalyticsBridge() {
           const name = sectionName(entry.target);
           if (seenSections.has(name)) return;
           seenSections.add(name);
+          // keep as gaEvent since this is already working in your container
           gaEvent("section_view", { section: name });
         });
       },
@@ -55,61 +56,78 @@ export default function AnalyticsBridge() {
       }
     );
 
-    const trackSections = () => {
-      const sections = document.querySelectorAll("section[id]");
-      sections.forEach((s) => sectionObserver.observe(s));
+    const scanSections = () => {
+      document.querySelectorAll("section[id]").forEach((s) => sectionObserver.observe(s));
     };
 
-    // Observe now and once again shortly after layout settles
-    trackSections();
-    const lateScan = setTimeout(trackSections, 400);
+    // observe immediately and once more after layout settles
+    scanSections();
+    const lateScan = setTimeout(scanSections, 400);
 
-    // ----- scroll_depth (25/50/75/100 once per pageview) -----
-    const firedDepths = new Set();
+    // ---------- scroll_depth (25/50/75/100 once per pageview) ----------
+    const firedDepths = new Set([/* numbers we’ve sent: 25/50/75/100 */]);
     const marks = [25, 50, 75, 100];
 
+    // Push to GTM dataLayer so your CE — scroll_depth trigger fires
+    const dlPush = (eventName, params = {}) => {
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push({ event: eventName, ...params });
+    };
+
+    // Percent of page reached by the bottom of the viewport
     const currentPercent = () => {
       const doc = document.documentElement;
       const body = document.body;
-      const scrollTop = window.pageYOffset || doc.scrollTop || body.scrollTop || 0;
+
+      const scrollTop =
+        window.pageYOffset || doc.scrollTop || body.scrollTop || 0;
       const viewport = window.innerHeight;
-      const total = Math.max(
+
+      const fullHeight = Math.max(
         body.scrollHeight,
         body.offsetHeight,
         doc.clientHeight,
         doc.scrollHeight,
         doc.offsetHeight
       );
-      if (total <= viewport) return 100; // short pages: already at bottom
-      const pct = Math.round(((scrollTop + viewport) / total) * 100);
+
+      if (fullHeight <= viewport) return 100; // very short pages
+
+      const pct = Math.round(((scrollTop + viewport) / fullHeight) * 100);
       return Math.max(0, Math.min(100, pct));
     };
 
     let ticking = false;
-    const onScroll = () => {
+    const fireMarksIfNeeded = () => {
+      const pct = currentPercent();
+      for (const m of marks) {
+        if (pct >= m && !firedDepths.has(m)) {
+          firedDepths.add(m);
+          // IMPORTANT: send as dataLayer custom event (no gtag here to avoid GA duplicates)
+          dlPush("scroll_depth", { percent: m });
+        }
+      }
+    };
+
+    const onScrollOrResize = () => {
       if (ticking) return;
       ticking = true;
       requestAnimationFrame(() => {
-        const pct = currentPercent();
-        for (const m of marks) {
-          if (pct >= m && !firedDepths.has(m)) {
-            firedDepths.add(m);
-            gaEvent("scroll_depth", { percent: m });
-          }
-        }
+        fireMarksIfNeeded();
         ticking = false;
       });
     };
 
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll);
-    onScroll(); // prime on load
+    // prime on load + listeners
+    fireMarksIfNeeded();
+    window.addEventListener("scroll", onScrollOrResize, { passive: true });
+    window.addEventListener("resize", onScrollOrResize);
 
     return () => {
       clearTimeout(lateScan);
       sectionObserver.disconnect();
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
+      window.removeEventListener("scroll", onScrollOrResize);
+      window.removeEventListener("resize", onScrollOrResize);
     };
   }, [router.asPath]);
 
