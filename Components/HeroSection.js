@@ -166,11 +166,7 @@ function HeroVisual() {
             @keyframes draw{ 0%{stroke-dashoffset:400;opacity:0} 15%{opacity:.9} 60%{stroke-dashoffset:0;opacity:.9} 100%{stroke-dashoffset:0;opacity:.15} }
             @keyframes pulse{ 0%,100%{r:4.5;opacity:1} 50%{r:7.5;opacity:.5} }
             @keyframes tick{ 0%{stroke-dashoffset:80;opacity:0} 40%{stroke-dashoffset:0;opacity:1} 100%{stroke-dashoffset:0;opacity:.2} }
-            /* ✅ Safari / Reduce-Motion fallback: still show lines & tick */
-            @media (prefers-reduced-motion: reduce){
-              .orbit,.draw,.pulse,.tick{ animation:none !important }
-              .draw,.tick{ stroke-dashoffset:0 !important; opacity:.9 }
-            }
+            @media (prefers-reduced-motion: reduce){ .orbit,.draw,.pulse,.tick{ animation:none !important } }
           `}</style>
         </svg>
       </div>
@@ -215,9 +211,7 @@ export default function HeroSection() {
       id="hero"
       className="
         section-fade relative
-        min-h-0
-        md:min-h-[85vh] md:min-h-[85svh]
-        xl:min-h-[78vh] xl:min-h-[78svh]
+        min-h-0 md:min-h-screen
         text-white
         flex items-start md:items-center
         justify-between
