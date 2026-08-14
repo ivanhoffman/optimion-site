@@ -8,7 +8,7 @@ import {
   Lock,
   CreditCard,
   Clock3,
-  FileBadgeCheck,
+  BadgeCheck,
   Headphones,
   XCircle,
   Layers,
@@ -28,7 +28,7 @@ const faqs = [
     a: "Yes. We use best-practice auth, least-privilege access, and store credentials in vaults. You keep control of accounts, and we can sign NDAs and DPAs on request.",
   },
   {
-    icon: FileBadgeCheck,
+    icon: BadgeCheck,
     q: "Who owns the accounts and the IP?",
     a: "You do. All platforms remain in your name, and you retain full ownership of workflows, dashboards, and custom code delivered.",
   },
