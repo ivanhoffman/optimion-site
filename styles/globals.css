@@ -149,6 +149,48 @@ svg { overflow: visible; }
   -webkit-text-fill-color: transparent;
 }
 
+/* Shared visual language for the expanded content architecture. */
+.surface-card{
+  border: 1px solid rgba(255,255,255,.10);
+  border-radius: 1rem;
+  background: rgba(255,255,255,.035);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.025);
+}
+
+.section-kicker{
+  margin-bottom: 1rem;
+  color: #67e8f9;
+  font-size: .75rem;
+  font-weight: 600;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+}
+
+.section-title{
+  max-width: 56rem;
+  color: #fff;
+  font-size: clamp(2rem, 4vw, 3.4rem);
+  font-weight: 500;
+  line-height: 1.12;
+  text-wrap: balance;
+}
+
+:focus-visible{
+  outline: 2px solid #67e8f9;
+  outline-offset: 3px;
+}
+
+summary::-webkit-details-marker{ display:none; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}
+
 /* ===================================================================== */
 /* ==========  Tall-desktop normalization + Safari SVG tweaks  ========= */
 /* ===================================================================== */

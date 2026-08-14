@@ -1,19 +1,16 @@
 // pages/terms.js
-import Head from "next/head";
+import SEO from "@/Components/SEO";
 
 const UPDATED = "September 2025";
 
 export default function TermsPage() {
   return (
     <>
-      <Head>
-        <title>Terms of Service — Optimion</title>
-        <meta
-          name="description"
-          content="Terms governing access to and use of Optimion’s website and services, including proposals, payment, confidentiality, IP, warranties, and liability."
-        />
-        <link rel="canonical" href="/terms" />
-      </Head>
+      <SEO
+        title="Terms of Service | Optimion"
+        description="Terms governing access to Optimion's website and professional services, including proposals, payment, confidentiality, intellectual property, and liability."
+        path="/terms"
+      />
 
       <main className="px-6 md:px-16 py-16 text-white">
         <section className="mx-auto w-full max-w-4xl">
@@ -121,7 +118,7 @@ export default function TermsPage() {
             <li>
               <h2 className="text-lg font-semibold">Contact</h2>
               <p className="mt-2 text-gray-300">
-                Questions? Email <a className="underline hover:text-white" href="mailto:support@optimion.com">support@optimion.com</a>.
+                Questions? Email <a className="underline hover:text-white" href="mailto:hello@optimion.us">hello@optimion.us</a>.
               </p>
             </li>
           </ol>

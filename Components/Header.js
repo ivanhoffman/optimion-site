@@ -1,167 +1,57 @@
-// Components/Header.js
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
-import Link from "next/link";
+import { useState } from "react";
 import Image from "next/image";
-import CalDotComModal from "@/Components/CalDotComModal"; // ⟵ swapped from CalendlyModal
-import { CalendarDays } from "lucide-react";
+import Link from "next/link";
+import { Menu, X } from "lucide-react";
+import ConsultationButton from "@/Components/ConsultationButton";
 
-/** Smooth scroll to an element ID, accounting for sticky header height. */
-function scrollToId(id) {
-  if (typeof document === "undefined" || !id) return;
-  const el = document.getElementById(id);
-  if (!el) return;
-  const header = document.querySelector("header");
-  const offset = (header?.getBoundingClientRect().height ?? 0) + 12;
-  const top = window.scrollY + el.getBoundingClientRect().top - offset;
-  window.scrollTo({ top, behavior: "smooth" });
-}
+const links = [
+  ["Services", "/#services"],
+  ["Selected Work", "/work"],
+  ["Systems", "/#systems"],
+  ["Process", "/#process"],
+  ["About", "/#about"],
+  ["FAQ", "/#faq"],
+];
 
-/** On initial load & whenever hash changes, perform the offset scroll. */
-function HashScrollFix() {
-  const handle = useCallback(() => {
-    const hash = window.location.hash;
-    if (!hash) return;
-    const id = hash.slice(1);
-    // run twice to cover lazy content/layout shifts
-    requestAnimationFrame(() => scrollToId(id));
-    setTimeout(() => scrollToId(id), 180);
-  }, []);
-
-  useEffect(() => {
-    handle(); // direct visit like /#get-started
-    const onHash = () => handle();
-    window.addEventListener("hashchange", onHash);
-    return () => window.removeEventListener("hashchange", onHash);
-  }, [handle]);
-
-  return null;
-}
-
-/** NavLink: cross-page route; on home, set hash (fires hashchange) and scroll. */
-function NavLink({ id, children, className = "" }) {
-  const href = `/#${id}`;
-  const onClick = (e) => {
-    if (window.location.pathname === "/") {
-      e.preventDefault();
-      const newHash = `#${id}`;
-      if (window.location.hash === newHash) {
-        window.dispatchEvent(new HashChangeEvent("hashchange"));
-      } else {
-        window.location.hash = newHash;
-      }
-    }
-  };
-  return (
-    <Link
-      href={href}
-      scroll={false}
-      onClick={onClick}
-      className={className}
-      /* analytics */
-      data-evt="nav_click"
-      data-place="header"
-      data-to={href}
-    >
-      {children}
-    </Link>
-  );
-}
-
-export default function Header({ variant = "site" }) {
-  const [calOpen, setCalOpen] = useState(false);
-  const showNav = variant !== "lp";
-
-  const NAV = [
-    { label: "Why Optimion", id: "why-optimion" },
-    { label: "About", id: "about" },
-    { label: "Process", id: "process" },
-    { label: "Stats", id: "stats" },
-    { label: "Integrations", id: "integrations" },
-    { label: "Testimonials", id: "testimonials" },
-    { label: "FAQ", id: "faq" },
-    { label: "Get Started", id: "get-started" },
-  ];
-
-  // Cal.com event URL (transparent, dark, your brand colors)
-  const calUrl =
-    "https://cal.com/optimion/30min?embed=true&theme=dark&backgroundColor=transparent&primaryColor=22d3ee&textColor=e5e7eb&layout=month_view";
+export default function Header() {
+  const [menuOpen, setMenuOpen] = useState(false);
 
   return (
     <>
-      <HashScrollFix />
-
-      <a
-        href="#main"
-        className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:bg-black focus:text-white focus:px-3 focus:py-2 focus:rounded"
-      >
-        Skip to content
-      </a>
-
-      <header className="sticky top-0 z-50 bg-black/40 backdrop-blur-md border-b border-white/10">
-        <div className="mx-auto max-w-7xl px-6 md:px-16 h-14 flex items-center justify-between">
-          {/* Logo (same visual footprint as current text) */}
-          <Link
-            href="/"
-            scroll={false}
-            aria-label="Optimion home"
-            className="flex items-center"
-            /* analytics */
-            data-evt="nav_click"
-            data-place="header"
-            data-to="/"
-          >
-            <Image
-              src={"/Optimi logo 2025 (10).png"}
-              alt="Optimion"
-              width={120}
-              height={28}
-              priority
-              draggable={false}
-              className="h-6 md:h-7 w-auto select-none"
-            />
+      <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-[80] focus:rounded focus:bg-black focus:px-4 focus:py-2 focus:text-white">Skip to content</a>
+      <header className="sticky top-0 z-50 border-b border-white/10 bg-black/75 backdrop-blur-xl">
+        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6 md:px-16">
+          <Link href="/" aria-label="Optimion home" data-evt="nav_click" data-place="header" data-to="/" onClick={() => setMenuOpen(false)}>
+            <Image src="/Optimi logo 2025 (10).png" alt="Optimion" width={120} height={28} priority draggable={false} className="h-6 w-auto select-none md:h-7" />
           </Link>
 
-          {showNav && (
-            <nav
-              className="hidden md:flex items-center gap-6 text-sm text-gray-300"
-              aria-label="Primary"
-            >
-              {NAV.map((item) => (
-                <NavLink key={item.id} id={item.id} className="hover:text-white">
-                  {item.label}
-                </NavLink>
-              ))}
-            </nav>
-          )}
+          <nav className="hidden items-center gap-5 text-sm text-gray-300 lg:flex" aria-label="Primary navigation">
+            {links.map(([label, href]) => (
+              <Link key={href} href={href} className="whitespace-nowrap transition hover:text-white" data-evt="nav_click" data-place="header" data-to={href}>{label}</Link>
+            ))}
+          </nav>
 
-          <div className="flex items-center">
-            <button
-              type="button"
-              onClick={() => setCalOpen(true)}
-              className="inline-flex items-center gap-2 px-3.5 py-2 rounded-md bg-gradient-to-r from-cyan-500 to-pink-500 text-white text-sm font-medium shadow-md hover:brightness-110 transition"
-              aria-haspopup="dialog"
-              aria-expanded={calOpen ? "true" : "false"}
-              /* analytics */
-              data-evt="cta_click"
-              data-place="header"
-            >
-              <CalendarDays className="w-4 h-4" />
-              Free Consult
+          <div className="flex items-center gap-2">
+            <div className="hidden sm:block"><ConsultationButton place="header" label="Free Consult" compact /></div>
+            <button type="button" onClick={() => setMenuOpen((value) => !value)} className="inline-flex h-11 w-11 items-center justify-center rounded-md border border-white/10 text-white lg:hidden" aria-label={menuOpen ? "Close navigation menu" : "Open navigation menu"} aria-expanded={menuOpen} aria-controls="mobile-navigation">
+              {menuOpen ? <X className="h-5 w-5" aria-hidden="true" /> : <Menu className="h-5 w-5" aria-hidden="true" />}
             </button>
           </div>
         </div>
-      </header>
 
-      {/* New modal (Cal.com) – UI unchanged */}
-      <CalDotComModal
-        open={calOpen}
-        onClose={() => setCalOpen(false)}
-        url={calUrl}
-        /* analytics context for cal_* events */
-        place="header"
-      />
+        {menuOpen ? (
+          <nav id="mobile-navigation" className="border-t border-white/10 bg-black px-6 py-5 lg:hidden" aria-label="Mobile navigation">
+            <div className="mx-auto flex max-w-7xl flex-col gap-1">
+              {links.map(([label, href]) => (
+                <Link key={href} href={href} onClick={() => setMenuOpen(false)} className="min-h-11 rounded-md px-3 py-3 text-gray-200 hover:bg-white/5 hover:text-white" data-evt="nav_click" data-place="mobile_header" data-to={href}>{label}</Link>
+              ))}
+              <div className="mt-3 sm:hidden"><ConsultationButton place="mobile_header" className="w-full" /></div>
+            </div>
+          </nav>
+        ) : null}
+      </header>
     </>
   );
 }

@@ -1,19 +1,16 @@
 // pages/privacy.js
-import Head from "next/head";
+import SEO from "@/Components/SEO";
 
-const UPDATED = "September 2025";
+const UPDATED = "August 2026";
 
 export default function PrivacyPage() {
   return (
     <>
-      <Head>
-        <title>Privacy Policy — Optimion</title>
-        <meta
-          name="description"
-          content="How Optimion collects, uses, and protects information. Contact info, project details, usage data, data sharing, retention, and your rights."
-        />
-        <link rel="canonical" href="/privacy" />
-      </Head>
+      <SEO
+        title="Privacy Policy | Optimion"
+        description="How Optimion collects, uses, protects, and retains information related to website visits, consultations, and client services."
+        path="/privacy"
+      />
 
       <main className="px-6 md:px-16 py-16 text-white">
         <section className="mx-auto w-full max-w-4xl">
@@ -54,8 +51,10 @@ export default function PrivacyPage() {
           {/* Analytics & Tools */}
           <h2 className="mt-10 text-xl font-semibold">Analytics &amp; Tools</h2>
           <p className="mt-3 text-gray-300">
-            We may use privacy-respecting analytics and advertising tools (e.g., Google products) to understand site
-            performance. We don’t sell personal information.
+            We may use analytics and advertising measurement tools, including Google products and, when configured,
+            the OpenAI Ads Measurement Pixel, to understand site performance and consultation conversions. Advertising
+            URLs may include UTM parameters and OpenAI&apos;s privacy-preserving click reference. The OpenAI pixel may store
+            that reference in a first-party cookie for attribution. We don’t sell personal information.
           </p>
 
           {/* Calendly */}
@@ -94,7 +93,7 @@ export default function PrivacyPage() {
           {/* Contact */}
           <h2 className="mt-10 text-xl font-semibold">Contact</h2>
           <p className="mt-3 text-gray-300">
-            Email: <a className="underline hover:text-white" href="mailto:support@optimion.com">support@optimion.com</a>
+            Email: <a className="underline hover:text-white" href="mailto:hello@optimion.us">hello@optimion.us</a>
           </p>
         </section>
       </main>

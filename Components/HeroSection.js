@@ -3,6 +3,7 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
+import Link from "next/link";
 import { ArrowRight, Check } from "lucide-react";
 import CalDotComModal from "@/Components/CalDotComModal"; // ⟵ Cal.com modal
 
@@ -18,12 +19,12 @@ function HeroVisual() {
   const R_DEFAULT = R_RING + 12;
 
   const CHIPS = [
-    { label: "Assessment", angle: 350, rFromRing: 12, dx: -14, anchor: "top" },
-    { label: "Configuration", angle: 50, rFromRing: 12, dx: -10, anchor: "auto" },
-    { label: "Integration", angle: 115, rFromRing: 12, dx: -6, anchor: "auto" },
-    { label: "Training", angle: 189, rFromRing: 12, dx: -12, anchor: "bottom" },
+    { label: "AI Workflows", angle: 350, rFromRing: 12, dx: -14, anchor: "top" },
+    { label: "ERP / CRM", angle: 50, rFromRing: 12, dx: -10, anchor: "auto" },
+    { label: "API Integration", angle: 115, rFromRing: 12, dx: -92, anchor: "auto" },
+    { label: "Power BI", angle: 189, rFromRing: 12, dx: -12, anchor: "bottom" },
     {
-      label: "Optimization",
+      label: "Operations",
       angle: 245,
       rFromRing: 0,
       dx: -130,
@@ -32,7 +33,7 @@ function HeroVisual() {
       anchor: "center",
     },
     {
-      label: "Process Design",
+      label: "Automation",
       angle: 310,
       rFromRing: 12,
       dx: -136,
@@ -220,53 +221,62 @@ export default function HeroSection() {
         overflow-visible
       "
     >
-      <div className="max-w-2xl z-10">
-        <motion.h1
+      <div className="max-w-3xl z-10">
+        <motion.p
           initial={{ opacity: 0, x: -50 }}
           whileInView={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.8 }}
           viewport={{ once: true }}
-          className="mb-3"
+          className="mb-5 text-sm font-medium uppercase tracking-[0.2em] text-cyan-300"
         >
-          <span className="text-4xl md:text-5xl font-medium leading-tight text-transparent bg-clip-text gradient-text antialiased">
-            Welcome to the
-          </span>
-        </motion.h1>
+          AI • Automation • ERP/CRM • Business Intelligence
+        </motion.p>
 
-        <motion.h2
+        <motion.h1
           initial={{ opacity: 0, x: -50 }}
           whileInView={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.2, duration: 0.8 }}
           viewport={{ once: true }}
-          className="text-5xl font-extrabold mb-4 bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-500 text-transparent bg-clip-text"
+          className="text-balance text-4xl font-semibold leading-[1.08] text-white md:text-6xl"
         >
-          Optimion System
-        </motion.h2>
+          We connect and automate the systems that run your business.
+        </motion.h1>
 
         <motion.p
           initial={{ opacity: 0, x: -50 }}
           whileInView={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.4, duration: 0.8 }}
           viewport={{ once: true }}
-          className="text-gray-300 text-lg max-w-lg mb-5"
+          className="mt-6 max-w-2xl text-lg leading-relaxed text-gray-300 md:text-xl"
         >
-          We build custom CRMs, powerful automations, and optimized workflows for any business. Eliminate bottlenecks. Unlock growth.
+          Optimion designs integrations, AI workflows, dashboards, and custom business systems across CRM, ERP, finance, inventory, and operations.
         </motion.p>
 
-        <motion.button
-          type="button"
-          onClick={() => setShowCal(true)}
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.6, duration: 0.6 }}
           viewport={{ once: true }}
-          className="group inline-flex items-center gap-2 px-5 py-3 bg-neutral-900 hover:bg-neutral-800 text-white border border-neutral-700 rounded-md text-sm transition-colors"
-          data-evt="cta_click"
-          data-place="hero"
+          className="mt-8 flex flex-col gap-3 sm:flex-row"
         >
-          Book a Free Call
-          <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-        </motion.button>
+          <button
+            type="button"
+            onClick={() => setShowCal(true)}
+            className="group inline-flex min-h-11 items-center justify-center gap-2 rounded-md bg-gradient-to-r from-cyan-500 to-pink-500 px-5 py-3 text-sm font-medium text-white shadow-md transition hover:brightness-110"
+            data-evt="cta_click"
+            data-place="hero"
+          >
+            Book a Free Systems Consultation
+            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+          </button>
+          <Link href="/work" className="inline-flex min-h-11 items-center justify-center rounded-md border border-neutral-700 bg-neutral-900 px-5 py-3 text-sm font-medium text-white transition hover:bg-neutral-800">
+            View Our Work
+          </Link>
+        </motion.div>
+
+        <ul className="mt-9 flex max-w-2xl flex-wrap gap-x-5 gap-y-2 text-sm text-gray-400" aria-label="Technology experience">
+          {["Business Central", "Power Automate", "Power BI", "Azure", "Zoho", "Odoo", "APIs"].map((item) => <li key={item}>{item}</li>)}
+        </ul>
       </div>
 
       {/* RIGHT VISUAL — hidden on mobile via CSS id */}
