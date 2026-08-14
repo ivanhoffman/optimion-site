@@ -12,7 +12,7 @@ export default function PrivacyPage() {
         path="/privacy"
       />
 
-      <main className="px-6 md:px-16 py-16 text-white">
+      <main id="main" className="px-6 md:px-16 py-16 text-white">
         <section className="mx-auto w-full max-w-4xl">
           <h1 className="text-3xl md:text-4xl font-semibold">Privacy Policy</h1>
           <p className="text-sm text-gray-400 mt-1">Last updated: {UPDATED}</p>

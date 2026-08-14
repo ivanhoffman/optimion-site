@@ -14,15 +14,20 @@ const GTM_ID = process.env.NEXT_PUBLIC_GTM_ID || "GTM-PQJFJPTW";
 export default function App({ Component, pageProps }) {
   const router = useRouter();
 
-  // Smoothly scroll to a hash after route changes (and on first load)
+  // Restore predictable navigation for both the window and the desktop body scrollport.
   useEffect(() => {
-    const scrollToHash = (url) => {
+    const restoreRouteScroll = (url) => {
       const candidate =
         typeof url === "string" ? url : window.location.pathname + window.location.hash;
       const hash = candidate.split("#")[1];
-      if (!hash) return;
 
       requestAnimationFrame(() => {
+        if (!hash) {
+          window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+          document.documentElement.scrollTop = 0;
+          document.body.scrollTop = 0;
+          return;
+        }
         const el =
           document.getElementById(hash) ||
           document.querySelector(`#${CSS.escape(hash)}`);
@@ -30,9 +35,9 @@ export default function App({ Component, pageProps }) {
       });
     };
 
-    scrollToHash(router.asPath); // initial load
-    router.events.on("routeChangeComplete", scrollToHash);
-    return () => router.events.off("routeChangeComplete", scrollToHash);
+    restoreRouteScroll(router.asPath);
+    router.events.on("routeChangeComplete", restoreRouteScroll);
+    return () => router.events.off("routeChangeComplete", restoreRouteScroll);
   }, [router.events, router.asPath]);
 
   // Push virtual pageviews for SPA navigations to GTM

@@ -1,9 +1,11 @@
 import HeroSection from "@/Components/HeroSection";
 import SEO from "@/Components/SEO";
+import TechnologyEcosystem from "@/Components/TechnologyEcosystem";
+import TestimonialsSection from "@/Components/TestimonialsSection";
 import {
   ConnectedSystems,
+  EngineeringPrinciples,
   FinalCTA,
-  FounderSection,
   HOME_FAQS,
   HomeFAQ,
   HomeServices,
@@ -28,14 +30,6 @@ const organizationSchema = {
   telephone: CONTACT.phone,
   email: CONTACT.email,
   areaServed: "United States",
-  founder: {
-    "@type": "Person",
-    "@id": absoluteUrl("/#ivan-hoffman"),
-    name: "Ivan Hoffman",
-    url: "https://ivanhoffman.io",
-    sameAs: ["https://github.com/ivanhoffman"],
-  },
-  sameAs: ["https://ivanhoffman.io"],
 };
 
 const websiteSchema = {
@@ -45,17 +39,6 @@ const websiteSchema = {
   name: "Optimion",
   url: absoluteUrl("/"),
   publisher: { "@id": absoluteUrl("/#organization") },
-};
-
-const personSchema = {
-  "@context": "https://schema.org",
-  "@type": "Person",
-  "@id": absoluteUrl("/#ivan-hoffman"),
-  name: "Ivan Hoffman",
-  url: "https://ivanhoffman.io",
-  jobTitle: "Founder",
-  worksFor: { "@id": absoluteUrl("/#organization") },
-  sameAs: ["https://github.com/ivanhoffman"],
 };
 
 const faqSchema = {
@@ -71,14 +54,16 @@ const faqSchema = {
 export default function Home() {
   return (
     <>
-      <SEO title={title} description={description} path="/" jsonLd={[organizationSchema, websiteSchema, personSchema, faqSchema]} />
+      <SEO title={title} description={description} path="/" jsonLd={[organizationSchema, websiteSchema, faqSchema]} />
       <main id="main">
         <HeroSection />
         <HomeServices />
         <ConnectedSystems />
+        <TechnologyEcosystem />
         <SelectedWork />
+        <EngineeringPrinciples />
+        <TestimonialsSection />
         <ImplementationProcess />
-        <FounderSection />
         <HomeFAQ />
         <FinalCTA />
       </main>

@@ -1,12 +1,13 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowUpRight, Check, ChevronRight } from "lucide-react";
+import { ArrowRight, Check, ChevronRight } from "lucide-react";
 import ConsultationButton from "@/Components/ConsultationButton";
 import SEO from "@/Components/SEO";
 import {
   absoluteUrl,
   CASE_STUDIES,
   SERVICES,
+  caseStudyPath,
   servicePath,
 } from "@/lib/site";
 
@@ -46,7 +47,7 @@ export default function ServicePage({ service, slug }) {
     "@type": "BreadcrumbList",
     itemListElement: [
       { "@type": "ListItem", position: 1, name: "Home", item: absoluteUrl("/") },
-      { "@type": "ListItem", position: 2, name: "Services", item: absoluteUrl("/#services") },
+      { "@type": "ListItem", position: 2, name: "Services", item: absoluteUrl("/services") },
       { "@type": "ListItem", position: 3, name: service.h1, item: absoluteUrl(path) },
     ],
   };
@@ -74,9 +75,9 @@ export default function ServicePage({ service, slug }) {
           <div className="pointer-events-none absolute right-[-18rem] top-[-14rem] h-[42rem] w-[42rem] rounded-full bg-gradient-to-br from-cyan-500/20 via-purple-500/15 to-pink-500/20 blur-3xl" />
           <div className="relative mx-auto max-w-7xl">
             <nav aria-label="Breadcrumb" className="mb-8 flex items-center gap-2 text-sm text-gray-400">
-              <Link href="/" className="hover:text-white">Home</Link>
+              <Link href="/" scroll className="hover:text-white">Home</Link>
               <ChevronRight className="h-4 w-4" aria-hidden="true" />
-              <Link href="/#services" className="hover:text-white">Services</Link>
+              <Link href="/services" scroll className="hover:text-white">Services</Link>
               <ChevronRight className="hidden h-4 w-4 sm:block" aria-hidden="true" />
               <span className="hidden text-gray-300 sm:inline">{service.h1}</span>
             </nav>
@@ -88,8 +89,8 @@ export default function ServicePage({ service, slug }) {
               <p className="mt-4 max-w-3xl text-base leading-relaxed text-gray-400 md:text-lg">{service.intro}</p>
               <div className="mt-9 flex flex-col gap-3 sm:flex-row sm:items-center">
                 <ConsultationButton place={`service_${slug}`} />
-                <Link href="/work" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-md border border-white/15 px-5 py-3 text-sm font-medium text-white transition hover:border-white/30 hover:bg-white/5">
-                  View verified work <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
+                <Link href="/work" scroll className="inline-flex min-h-11 items-center justify-center gap-2 rounded-md border border-white/15 px-5 py-3 text-sm font-medium text-white transition hover:border-white/30 hover:bg-white/5">
+                  View selected work <ArrowRight className="h-4 w-4" aria-hidden="true" />
                 </Link>
               </div>
             </div>
@@ -124,8 +125,8 @@ export default function ServicePage({ service, slug }) {
           <div className="mx-auto max-w-7xl">
             <div className="max-w-3xl">
               <p className="section-kicker">Selected work</p>
-              <h2 className="section-title">Evidence from systems already built</h2>
-              <p className="mt-5 text-gray-400">These sanitized examples come from the founder&apos;s public technical portfolio. Client and employer identities are intentionally omitted.</p>
+              <h2 className="section-title">Evidence from real systems and workflows.</h2>
+              <p className="mt-5 text-gray-400">Representative implementations across automation, ERP, analytics, and operational systems. Sensitive business information has been removed from displayed examples.</p>
             </div>
             <div className={`mt-10 grid gap-6 ${projects.length === 1 ? "max-w-2xl" : "lg:grid-cols-3"}`}>
               {projects.map((project) => (
@@ -140,9 +141,9 @@ export default function ServicePage({ service, slug }) {
                     <ul className="mt-4 flex flex-wrap gap-2" aria-label={`${project.title} technologies`}>
                       {project.technologies.map((tech) => <li key={tech} className="rounded-full bg-white/[0.05] px-2.5 py-1 text-xs text-gray-300">{tech}</li>)}
                     </ul>
-                    <a href={project.portfolioUrl} target="_blank" rel="noreferrer" className="mt-5 inline-flex items-center gap-1 text-sm font-medium text-cyan-300 hover:text-cyan-200">
-                      View technical case study <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
-                    </a>
+                    <Link href={caseStudyPath(project.slug)} scroll className="mt-5 inline-flex items-center gap-1 text-sm font-medium text-cyan-300 hover:text-cyan-200">
+                      View case study <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                    </Link>
                   </div>
                 </article>
               ))}
@@ -212,7 +213,7 @@ export default function ServicePage({ service, slug }) {
                 <p className="section-kicker">Start with the real process</p>
                 <h2 className="max-w-3xl text-3xl font-semibold text-white md:text-4xl">Bring the workflow, systems, and bottleneck. We&apos;ll map a practical path forward.</h2>
                 <div className="mt-6 flex flex-wrap gap-x-5 gap-y-2 text-sm text-gray-300">
-                  {relatedServices.map((item) => <Link key={item.slug} href={servicePath(item.slug)} className="hover:text-white">Related: {item.name}</Link>)}
+                  {relatedServices.map((item) => <Link key={item.slug} href={servicePath(item.slug)} scroll className="hover:text-white">Related: {item.name}</Link>)}
                 </div>
               </div>
               <ConsultationButton place={`service_${slug}_final`} />

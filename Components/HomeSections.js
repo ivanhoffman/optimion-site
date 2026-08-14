@@ -1,8 +1,6 @@
-import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowRight,
-  ArrowUpRight,
   BarChart3,
   Bot,
   Braces,
@@ -12,7 +10,8 @@ import {
   Workflow,
 } from "lucide-react";
 import ConsultationButton from "@/Components/ConsultationButton";
-import { CASE_STUDIES, SERVICES, servicePath } from "@/lib/site";
+import WorkGrid from "@/Components/WorkGrid";
+import { SERVICES, servicePath } from "@/lib/site";
 
 const serviceIcons = [Workflow, Database, Bot, BarChart3, Network, Braces, Braces];
 
@@ -33,14 +32,14 @@ export function HomeServices() {
                 <Icon className="h-6 w-6 text-cyan-300" aria-hidden="true" />
                 <h3 className="mt-5 text-xl font-semibold text-white">{service.name}</h3>
                 <p className="mt-3 leading-relaxed text-gray-400">{service.short}</p>
-                <Link href={servicePath(service.slug)} className="mt-6 inline-flex items-center gap-2 text-sm font-medium text-white">
+                <Link href={servicePath(service.slug)} scroll className="mt-6 inline-flex items-center gap-2 text-sm font-medium text-white">
                   Explore {service.name} <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" aria-hidden="true" />
                 </Link>
               </article>
             );
           })}
         </div>
-        <Link href={servicePath("custom-business-software")} className="mt-6 flex items-center justify-between gap-6 rounded-2xl border border-white/10 bg-white/[0.025] p-6 transition hover:border-white/20 hover:bg-white/[0.04]">
+        <Link href={servicePath("custom-business-software")} scroll className="mt-6 flex items-center justify-between gap-6 rounded-2xl border border-white/10 bg-white/[0.025] p-6 transition hover:border-white/20 hover:bg-white/[0.04]">
           <span>
             <span className="block text-lg font-semibold text-white">Custom Business Software</span>
             <span className="mt-1 block text-sm text-gray-400">Internal applications, portals, workflow tools, and AI-enabled operational software.</span>
@@ -63,10 +62,6 @@ export function ConnectedSystems() {
     "Replace spreadsheet-driven workflows",
     "Add AI to repetitive administrative work",
   ];
-  const systems = [
-    "Dynamics 365 Business Central", "Power Automate", "Power BI", "Azure", "SharePoint", "Zoho", "HubSpot", "Salesforce", "Pipedrive", "Odoo", "QuickBooks", "Xero", "Shopify", "PostgreSQL", "Make", "Zapier", "n8n", "REST APIs", "Webhooks",
-  ];
-
   return (
     <section id="systems" className="scroll-mt-20 border-y border-white/10 px-6 py-20 md:px-16 md:py-28">
       <div className="mx-auto grid max-w-7xl gap-14 lg:grid-cols-2 lg:items-start">
@@ -78,22 +73,24 @@ export function ConnectedSystems() {
             {useCases.map((item) => <li key={item} className="flex gap-3 text-sm leading-relaxed text-gray-300"><Check className="mt-0.5 h-5 w-5 shrink-0 text-cyan-300" aria-hidden="true" />{item}</li>)}
           </ul>
         </div>
-        <div className="surface-card p-6 md:p-8">
-          <h3 className="text-sm font-medium uppercase tracking-[0.18em] text-gray-400">Experience integrating with</h3>
-          <ul className="mt-6 flex flex-wrap gap-2">
-            {systems.map((system) => <li key={system} className="rounded-full border border-white/10 bg-black/25 px-3 py-2 text-sm text-gray-200">{system}</li>)}
-          </ul>
-          <p className="mt-6 text-sm leading-relaxed text-gray-500">Platform names describe implementation experience only. Optimion does not claim an official partnership or certification unless explicitly stated.</p>
+        <div className="surface-card overflow-hidden p-6 md:p-8">
+          <p className="section-kicker">Operating model</p>
+          <h3 className="text-2xl font-semibold text-white">One dependable flow of operational information</h3>
+          <div className="mt-7 space-y-3">
+            {["Customer and order data enters once", "Systems of record retain clear ownership", "Automations handle routine movement and validation", "Exceptions reach the right team with context", "Reporting reconciles to operational sources"].map((item, index) => (
+              <div key={item} className="flex items-center gap-4 rounded-xl border border-white/10 bg-black/20 p-4">
+                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-cyan-500/20 to-pink-500/20 text-xs font-semibold text-white">0{index + 1}</span>
+                <span className="text-sm text-gray-200">{item}</span>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </section>
   );
 }
 
-export function SelectedWork({ expanded = false }) {
-  const entries = Object.values(CASE_STUDIES);
-  const projects = expanded ? entries : entries.slice(0, 4);
-
+export function SelectedWork({ expanded = false, showFilters = false }) {
   return (
     <section id="work" className="section-fade scroll-mt-20 px-6 py-20 md:px-16 md:py-28">
       <div className="mx-auto max-w-7xl">
@@ -101,28 +98,11 @@ export function SelectedWork({ expanded = false }) {
           <div className="max-w-3xl">
             <p className="section-kicker">Selected work</p>
             <h2 className="section-title">Real systems. Sanitized proof.</h2>
-            <p className="mt-5 text-lg leading-relaxed text-gray-400">Technical examples are based on public portfolio projects. Names, proprietary details, and sensitive records are omitted.</p>
+            <p className="mt-5 text-lg leading-relaxed text-gray-400">Representative implementations across automation, ERP, analytics, and operational systems. Sensitive business information has been removed from displayed examples.</p>
           </div>
-          {!expanded ? <Link href="/work" className="inline-flex items-center gap-2 text-sm font-medium text-cyan-300 hover:text-cyan-200">View all selected work <ArrowRight className="h-4 w-4" aria-hidden="true" /></Link> : null}
+          {!expanded ? <Link href="/work" scroll className="inline-flex items-center gap-2 text-sm font-medium text-cyan-300 hover:text-cyan-200">View all selected work <ArrowRight className="h-4 w-4" aria-hidden="true" /></Link> : null}
         </div>
-        <div className="mt-12 grid gap-6 md:grid-cols-2">
-          {projects.map((project) => (
-            <article key={project.title} className="surface-card overflow-hidden">
-              <div className="relative aspect-[16/9] overflow-hidden border-b border-white/10 bg-black/40">
-                <Image src={project.image} alt={project.imageAlt} fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover transition duration-500 hover:scale-[1.02]" />
-              </div>
-              <div className="p-6 md:p-7">
-                <h3 className="text-2xl font-semibold text-white">{project.title}</h3>
-                <p className="mt-3 leading-relaxed text-gray-300">{project.summary}</p>
-                <p className="mt-3 text-sm leading-relaxed text-gray-400">{project.impact}</p>
-                <ul className="mt-5 flex flex-wrap gap-2">
-                  {project.technologies.map((tech) => <li key={tech} className="rounded-full bg-white/[0.05] px-2.5 py-1 text-xs text-gray-300">{tech}</li>)}
-                </ul>
-                <a href={project.portfolioUrl} target="_blank" rel="noreferrer" className="mt-6 inline-flex items-center gap-1 text-sm font-medium text-cyan-300 hover:text-cyan-200">View technical case study <span className="sr-only">for {project.title}</span><ArrowUpRight className="h-4 w-4" aria-hidden="true" /></a>
-              </div>
-            </article>
-          ))}
-        </div>
+        <WorkGrid limit={expanded ? undefined : 4} showFilters={showFilters} />
       </div>
     </section>
   );
@@ -136,7 +116,7 @@ export function ImplementationProcess() {
     ["Launch with ownership", "Document the solution, monitor it, and give the team a clear way to handle exceptions and future change."],
   ];
   return (
-    <section id="process" className="scroll-mt-20 border-y border-white/10 px-6 py-20 md:px-16 md:py-28">
+    <section id="approach" className="scroll-mt-20 border-y border-white/10 px-6 py-20 md:px-16 md:py-28">
       <div className="mx-auto max-w-7xl">
         <div className="max-w-3xl">
           <p className="section-kicker">How we work</p>
@@ -156,21 +136,29 @@ export function ImplementationProcess() {
   );
 }
 
-export function FounderSection() {
+export function EngineeringPrinciples() {
+  const principles = [
+    ["Systems-first architecture", "Understand systems of record, ownership, data flow, and operational process before adding automation."],
+    ["Reliability by design", "Build validation, exception handling, logging, retry behavior, and human review into critical workflows."],
+    ["Integrate before replacing", "Use the software an organization already owns whenever it can reliably support the required process."],
+    ["Built for ownership", "Deliver systems that can be documented, monitored, maintained, and extended instead of fragile one-off automations."],
+  ];
   return (
-    <section id="about" className="scroll-mt-20 px-6 py-20 md:px-16 md:py-28">
-      <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.7fr_1.3fr] lg:items-center">
-        <div className="surface-card p-7">
-          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-cyan-500/25 via-purple-500/25 to-pink-500/25 text-xl font-semibold text-white">IH</div>
-          <h3 className="mt-5 text-xl font-semibold text-white">Ivan Hoffman</h3>
-          <p className="mt-1 text-sm text-gray-400">Founder, Optimion</p>
-          <a href="https://ivanhoffman.io" target="_blank" rel="noreferrer" className="mt-5 inline-flex items-center gap-1 text-sm text-cyan-300 hover:text-cyan-200">Public technical portfolio <ArrowUpRight className="h-4 w-4" aria-hidden="true" /></a>
+    <section id="principles" className="scroll-mt-20 px-6 py-20 md:px-16 md:py-28">
+      <div className="mx-auto max-w-7xl">
+        <div className="max-w-4xl">
+          <p className="section-kicker">Engineering principles</p>
+          <h2 className="section-title">Built for operational complexity.</h2>
+          <p className="mt-6 max-w-3xl text-lg leading-relaxed text-gray-300">Optimion designs systems around how data, transactions, exceptions, and teams actually move through an organization.</p>
         </div>
-        <div>
-          <p className="section-kicker">Founder-led systems engineering</p>
-          <h2 className="section-title">Technical depth with direct accountability</h2>
-          <p className="mt-6 max-w-3xl text-lg leading-relaxed text-gray-300">Optimion is led by Ivan Hoffman, whose public work spans Microsoft Dynamics 365 Business Central, AL extensions, Power Automate, Power BI, DAX, purchasing and inventory analytics, AI document workflows, CRM automation, APIs, and custom business systems.</p>
-          <p className="mt-4 max-w-3xl leading-relaxed text-gray-400">That experience keeps projects grounded in how business data, transactions, exceptions, and users actually move through an operation.</p>
+        <div className="mt-12 grid gap-5 md:grid-cols-2">
+          {principles.map(([title, description], index) => (
+            <article key={title} className="surface-card p-6 md:p-7">
+              <span className="text-xs font-semibold text-cyan-300">0{index + 1}</span>
+              <h3 className="mt-4 text-xl font-semibold text-white">{title}</h3>
+              <p className="mt-3 leading-relaxed text-gray-400">{description}</p>
+            </article>
+          ))}
         </div>
       </div>
     </section>

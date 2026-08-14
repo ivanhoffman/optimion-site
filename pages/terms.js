@@ -1,7 +1,7 @@
 // pages/terms.js
 import SEO from "@/Components/SEO";
 
-const UPDATED = "September 2025";
+const UPDATED = "August 2026";
 
 export default function TermsPage() {
   return (
@@ -12,7 +12,7 @@ export default function TermsPage() {
         path="/terms"
       />
 
-      <main className="px-6 md:px-16 py-16 text-white">
+      <main id="main" className="px-6 md:px-16 py-16 text-white">
         <section className="mx-auto w-full max-w-4xl">
           <h1 className="text-3xl md:text-4xl font-semibold">Terms of Service</h1>
           <p className="text-sm text-gray-400 mt-1">Last updated: {UPDATED}</p>

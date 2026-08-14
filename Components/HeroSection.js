@@ -280,7 +280,7 @@ export default function HeroSection() {
       </div>
 
       {/* RIGHT VISUAL — hidden on mobile via CSS id */}
-      <div className="pointer-events-none hidden md:flex absolute md:static right-0 top-0 bottom-0 w-full md:w-1/2 items-center justify-center">
+      <div className="pointer-events-none hidden lg:flex absolute lg:static right-0 top-0 bottom-0 w-full lg:w-1/2 items-center justify-center">
         <HeroVisual />
       </div>
 
