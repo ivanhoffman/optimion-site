@@ -5,7 +5,8 @@ import { useRouter } from "next/router";
 import Script from "next/script";
 import Header from "@/Components/Header";
 import Footer from "@/Components/Footer";
-import AnalyticsBridge from "@/Components/AnalyticsBridge"; // NEW: centralizes data-evt → GTM/GA4
+import AnalyticsBridge from "@/Components/AnalyticsBridge";
+import OpenAIAdsPixel from "@/Components/OpenAIAdsPixel";
 
 // Use env var if present, fall back to your GTM container ID
 const GTM_ID = process.env.NEXT_PUBLIC_GTM_ID || "GTM-PQJFJPTW";
@@ -44,6 +45,12 @@ export default function App({ Component, pageProps }) {
         page_location: window.location.href,
         page_title: document.title,
       });
+      if (typeof window.oaiq === "function") {
+        window.oaiq("measure", "page_viewed", {
+          type: "contents",
+          contents: [{ id: url.split("?")[0], name: document.title, content_type: "page" }],
+        });
+      }
     };
     router.events.on("routeChangeComplete", handleRouteChange);
     return () => router.events.off("routeChangeComplete", handleRouteChange);
@@ -61,6 +68,8 @@ export default function App({ Component, pageProps }) {
           })(window,document,'script','dataLayer','${GTM_ID}');
         `}
       </Script>
+
+      <OpenAIAdsPixel />
 
       <Header variant="site" />
       <Component {...pageProps} />
