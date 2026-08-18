@@ -1,8 +1,7 @@
-import { CASE_STUDIES, SERVICE_SLUGS, SITE_URL, SERVICE_PAGES, TECHNOLOGY_CATEGORIES, caseStudyPath, servicePath } from "@/lib/site";
+import { SERVICE_SLUGS, SITE_URL, SERVICE_PAGES, TECHNOLOGY_CATEGORIES, servicePath } from "@/lib/site";
 
 function buildLlmsTxt() {
   const services = SERVICE_SLUGS.map((slug) => `- ${SERVICE_PAGES[slug].h1}: ${SITE_URL}${servicePath(slug)}`).join("\n");
-  const work = Object.values(CASE_STUDIES).map((project) => `- ${project.title}: ${SITE_URL}${caseStudyPath(project.slug)}`).join("\n");
   const technology = TECHNOLOGY_CATEGORIES.map((category) => `- ${category.name}: ${category.systems.join(", ")}`).join("\n");
   return `# Optimion
 
@@ -11,10 +10,6 @@ Optimion is a business systems engineering company focused on AI automation, sys
 ## Services
 - Services overview: ${SITE_URL}/services
 ${services}
-
-## Representative implementation experience
-- Selected systems and automation work: ${SITE_URL}/work
-${work}
 
 ## Technology ecosystem
 ${technology}

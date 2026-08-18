@@ -10,7 +10,6 @@ import {
   Workflow,
 } from "lucide-react";
 import ConsultationButton from "@/Components/ConsultationButton";
-import WorkGrid from "@/Components/WorkGrid";
 import { SERVICES, servicePath } from "@/lib/site";
 
 const serviceIcons = [Workflow, Database, Bot, BarChart3, Network, Braces, Braces];
@@ -85,24 +84,6 @@ export function ConnectedSystems() {
             ))}
           </div>
         </div>
-      </div>
-    </section>
-  );
-}
-
-export function SelectedWork({ expanded = false, showFilters = false }) {
-  return (
-    <section id="work" className="section-fade scroll-mt-20 px-6 py-20 md:px-16 md:py-28">
-      <div className="mx-auto max-w-7xl">
-        <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
-          <div className="max-w-3xl">
-            <p className="section-kicker">Selected work</p>
-            <h2 className="section-title">Real systems. Sanitized proof.</h2>
-            <p className="mt-5 text-lg leading-relaxed text-gray-400">Representative implementations across automation, ERP, analytics, and operational systems. Sensitive business information has been removed from displayed examples.</p>
-          </div>
-          {!expanded ? <Link href="/work" scroll className="inline-flex items-center gap-2 text-sm font-medium text-cyan-300 hover:text-cyan-200">View all selected work <ArrowRight className="h-4 w-4" aria-hidden="true" /></Link> : null}
-        </div>
-        <WorkGrid limit={expanded ? undefined : 4} showFilters={showFilters} />
       </div>
     </section>
   );

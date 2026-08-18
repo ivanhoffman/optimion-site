@@ -269,8 +269,8 @@ export default function HeroSection() {
             Book a Free Systems Consultation
             <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
           </button>
-          <Link href="/work" className="inline-flex min-h-11 items-center justify-center rounded-md border border-neutral-700 bg-neutral-900 px-5 py-3 text-sm font-medium text-white transition hover:bg-neutral-800">
-            View Our Work
+          <Link href="/services" className="inline-flex min-h-11 items-center justify-center rounded-md border border-neutral-700 bg-neutral-900 px-5 py-3 text-sm font-medium text-white transition hover:bg-neutral-800">
+            Explore Services
           </Link>
         </motion.div>
 

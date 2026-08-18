@@ -10,14 +10,15 @@ const services = [
   ["custom-business-software", "Custom Business Software"],
 ];
 
-const caseStudies = [
+const removedCaseStudyRoutes = [
+  "/work",
   "ai-vendor-follow-up-automation",
   "ai-contract-analysis",
   "inventory-velocity-analytics",
   "invoice-profitability-analytics",
   "business-central-purchasing-guardrail",
   "crm-intake-routing-automation",
-];
+].map((path) => path.startsWith("/") ? path : `/work/${path}`);
 
 async function expectPageAtTop(page) {
   await expect.poll(async () => page.evaluate(() => ({
@@ -75,30 +76,14 @@ test("D — service breadcrumbs use Home → Services → Current Service", asyn
   }
 });
 
-test("E — work filters stay on /work and change only the project set", async ({ page }) => {
-  await page.goto("/work");
-  const allCards = await page.locator("#work article").count();
-  expect(allCards).toBe(caseStudies.length);
+test("E — selected work and case studies are completely removed", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.locator("#work")).toHaveCount(0);
+  await expect(page.locator('a[href="/work"], a[href^="/work/"]')).toHaveCount(0);
+  await expect(page.locator("body")).not.toContainText(/selected work|case stud/i);
 
-  for (const filter of ["AI & Automation", "Business Central", "Business Intelligence", "CRM", "Integrations"]) {
-    await page.getByRole("tab", { name: filter, exact: true }).click();
-    await expect(page).toHaveURL(/\/work$/);
-    await expect(page.getByRole("tab", { name: filter, exact: true })).toHaveAttribute("aria-selected", "true");
-    const filteredCards = await page.locator("#work article").count();
-    expect(filteredCards).toBeGreaterThan(0);
-    expect(filteredCards).toBeLessThan(allCards);
-  }
-});
-
-test("F — every selected-work card opens an internal Optimion case study", async ({ page }) => {
-  for (const slug of caseStudies) {
-    await page.goto("/work");
-    const link = page.locator(`#work a[href="/work/${slug}"]`).first();
-    await expect(link).toBeVisible();
-    await link.click();
-    await expect(page).toHaveURL(new RegExp(`/work/${slug}$`));
-    await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
-    await expect(page.locator("a[href*='ivanhoffman.io']")).toHaveCount(0);
-    await expectPageAtTop(page);
+  for (const route of removedCaseStudyRoutes) {
+    const response = await page.goto(route);
+    expect(response.status(), route).toBe(404);
   }
 });

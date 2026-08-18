@@ -1,13 +1,10 @@
-import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Check, ChevronRight } from "lucide-react";
+import { Check, ChevronRight } from "lucide-react";
 import ConsultationButton from "@/Components/ConsultationButton";
 import SEO from "@/Components/SEO";
 import {
   absoluteUrl,
-  CASE_STUDIES,
   SERVICES,
-  caseStudyPath,
   servicePath,
 } from "@/lib/site";
 
@@ -21,7 +18,6 @@ const approachLabels = [
 
 export default function ServicePage({ service, slug }) {
   const path = servicePath(slug);
-  const projects = service.projectKeys.map((key) => CASE_STUDIES[key]);
   const relatedServices = service.related
     .map((relatedSlug) => SERVICES.find((item) => item.slug === relatedSlug))
     .filter(Boolean);
@@ -89,9 +85,6 @@ export default function ServicePage({ service, slug }) {
               <p className="mt-4 max-w-3xl text-base leading-relaxed text-gray-400 md:text-lg">{service.intro}</p>
               <div className="mt-9 flex flex-col gap-3 sm:flex-row sm:items-center">
                 <ConsultationButton place={`service_${slug}`} />
-                <Link href="/work" scroll className="inline-flex min-h-11 items-center justify-center gap-2 rounded-md border border-white/15 px-5 py-3 text-sm font-medium text-white transition hover:border-white/30 hover:bg-white/5">
-                  View selected work <ArrowRight className="h-4 w-4" aria-hidden="true" />
-                </Link>
               </div>
             </div>
 
@@ -121,37 +114,7 @@ export default function ServicePage({ service, slug }) {
           </div>
         </section>
 
-        <section className="px-6 py-20 md:px-16 md:py-28">
-          <div className="mx-auto max-w-7xl">
-            <div className="max-w-3xl">
-              <p className="section-kicker">Selected work</p>
-              <h2 className="section-title">Evidence from real systems and workflows.</h2>
-              <p className="mt-5 text-gray-400">Representative implementations across automation, ERP, analytics, and operational systems. Sensitive business information has been removed from displayed examples.</p>
-            </div>
-            <div className={`mt-10 grid gap-6 ${projects.length === 1 ? "max-w-2xl" : "lg:grid-cols-3"}`}>
-              {projects.map((project) => (
-                <article key={project.title} className="surface-card overflow-hidden">
-                  <div className="relative aspect-[16/9] overflow-hidden border-b border-white/10 bg-black/40">
-                    <Image src={project.image} alt={project.imageAlt} fill sizes="(max-width: 1024px) 100vw, 33vw" className="object-cover" />
-                  </div>
-                  <div className="p-6">
-                    <h3 className="text-xl font-semibold text-white">{project.title}</h3>
-                    <p className="mt-3 text-sm leading-relaxed text-gray-300">{project.summary}</p>
-                    <p className="mt-3 text-sm leading-relaxed text-gray-400">{project.impact}</p>
-                    <ul className="mt-4 flex flex-wrap gap-2" aria-label={`${project.title} technologies`}>
-                      {project.technologies.map((tech) => <li key={tech} className="rounded-full bg-white/[0.05] px-2.5 py-1 text-xs text-gray-300">{tech}</li>)}
-                    </ul>
-                    <Link href={caseStudyPath(project.slug)} scroll className="mt-5 inline-flex items-center gap-1 text-sm font-medium text-cyan-300 hover:text-cyan-200">
-                      View case study <ArrowRight className="h-4 w-4" aria-hidden="true" />
-                    </Link>
-                  </div>
-                </article>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <section className="border-y border-white/10 px-6 py-20 md:px-16 md:py-24">
+        <section className="border-b border-white/10 px-6 py-20 md:px-16 md:py-24">
           <div className="mx-auto max-w-7xl">
             <div className="grid gap-12 lg:grid-cols-2">
               <div>

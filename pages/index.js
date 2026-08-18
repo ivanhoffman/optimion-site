@@ -10,7 +10,6 @@ import {
   HomeFAQ,
   HomeServices,
   ImplementationProcess,
-  SelectedWork,
 } from "@/Components/HomeSections";
 import { absoluteUrl, CONTACT } from "@/lib/site";
 
@@ -60,7 +59,6 @@ export default function Home() {
         <HomeServices />
         <ConnectedSystems />
         <TechnologyEcosystem />
-        <SelectedWork />
         <EngineeringPrinciples />
         <TestimonialsSection />
         <ImplementationProcess />

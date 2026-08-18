@@ -1,6 +1,6 @@
-import { CASE_STUDY_SLUGS, SERVICE_SLUGS, SITE_URL, caseStudyPath, servicePath } from "@/lib/site";
+import { SERVICE_SLUGS, SITE_URL, servicePath } from "@/lib/site";
 
-const publicPaths = ["/", "/services", ...SERVICE_SLUGS.map(servicePath), "/work", ...CASE_STUDY_SLUGS.map(caseStudyPath), "/privacy", "/terms"];
+const publicPaths = ["/", "/services", ...SERVICE_SLUGS.map(servicePath), "/privacy", "/terms"];
 
 function xmlEscape(value) {
   return value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");

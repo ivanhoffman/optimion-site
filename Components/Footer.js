@@ -4,7 +4,6 @@ import ConsultationButton from "@/Components/ConsultationButton";
 import { CONTACT, SERVICES, servicePath } from "@/lib/site";
 
 const exploreLinks = [
-  ["Work", "/work"],
   ["Technology", "/#technology"],
   ["Approach", "/#approach"],
   ["FAQ", "/#faq"],

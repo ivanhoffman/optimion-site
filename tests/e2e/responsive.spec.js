@@ -33,7 +33,8 @@ test("required mobile, tablet, and Windows desktop viewports remain usable", asy
     await page.setViewportSize(viewport);
     await page.goto("/");
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
-    await expect(page.locator("#work article")).toHaveCount(4);
+    await expect(page.locator("#work")).toHaveCount(0);
+    await expect(page.locator('a[href="/work"], a[href^="/work/"]')).toHaveCount(0);
     await expect(page.locator("#testimonials figure")).toHaveCount(6);
     await expect(page.locator("footer [data-footer-service]")).toHaveCount(7);
     await expect(page.getByRole("tablist", { name: "Technology categories" })).toBeVisible();
@@ -64,11 +65,5 @@ test("required mobile, tablet, and Windows desktop viewports remain usable", asy
     await expect(page.locator("main article")).toHaveCount(7);
     await expectNoOverflow(page);
 
-    await page.goto("/work/ai-vendor-follow-up-automation");
-    await expect(page.getByRole("heading", { level: 1, name: "AI Vendor Follow-Up Automation" })).toBeVisible();
-    await expect(page.getByRole("heading", { name: "The operational problem" })).toBeVisible();
-    await expect(page.getByRole("heading", { name: "The implemented architecture" })).toBeVisible();
-    await expect(page.getByRole("button", { name: "Book a Free Systems Consultation" })).toBeVisible();
-    await expectNoOverflow(page);
   }
 });

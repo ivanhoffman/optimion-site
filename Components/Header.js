@@ -8,7 +8,6 @@ import ConsultationButton from "@/Components/ConsultationButton";
 import { SERVICES, servicePath } from "@/lib/site";
 
 const primaryLinks = [
-  ["Work", "/work"],
   ["Technology", "/#technology"],
   ["Approach", "/#approach"],
   ["FAQ", "/#faq"],
