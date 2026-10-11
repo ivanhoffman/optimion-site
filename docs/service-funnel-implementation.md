@@ -2,19 +2,19 @@
 
 As of October 11, 2026. This is an internal configuration and validation record; it is not a public navigation page.
 
-## Status and spending limits
+## Initial implementation status and historical spending limits
 
 Six service landing pages and their attribution implementation are deployed in website commit `edca163ad0fd96bd11cc25cb9a444d8061954558`. Full lint, production build, and the final automated suite passed: **45 passed, 3 skipped**. Vercel deployment `J6GqumYvLiZfVQgSqZyDhEeGr59v` is **Ready / Production**, with `optimion.us` assigned. Live secondary-event receipt is verified in Ads Manager and GA4. After explicit user authorization for Cal.com's Terms confirmation, the official dry run completed successfully on October 11, 2026, and the website received its test-completion callback. No real appointment or genuine completed-booking conversion receipt is claimed.
 
-**No new service campaigns, ad groups, or ads have been created or launched. No new advertising spend was initiated.** The live ChatGPT Ads interface requires a minimum average daily budget of **$25**, and its daily-budget explanation permits spending up to **2× the average daily budget** on a day. That cannot guarantee the user's hard **$5 maximum per service per day**. An average daily budget is not a hard daily spending cap. No attempt was made to bypass this limit or substitute the existing broad campaign for the six service tests.
+**At the conclusion of the initial six-service implementation, no new service campaigns, ad groups, or ads had been created or launched, and no new advertising spend had been initiated.** The live ChatGPT Ads interface requires a minimum average daily budget of **$25**, and its daily-budget explanation permits spending up to **2× the average daily budget** on a day. That could not guarantee the initial hard **$5 maximum per service per day**. An average daily budget is not a hard daily spending cap. No attempt was made to bypass that limit or substitute the existing broad campaign for the six service tests.
 
-The requested six-service plan would have a $30/day total and approximately $60 over two days only if each service could be capped at $5/day. Those are requested limits, not a configuration that is currently available or active. No automatic budget increase, redistribution, scaling, or pause schedule was created. The broad campaign remains preserved in its observed OFF state.
+The initial six-service plan would have had a $30/day total and approximately $60 over two days only if each service could be capped at $5/day. Those were requested limits, not an available or active configuration. **The user has since explicitly superseded that initial limit for CRM Integration, ERP & Business Central, and Business Automation only**, approving $25 average/day per campaign with the disclosed potential for $50 per campaign in a day. All three are now published, ON, and shown as **Serving**; the publication follow-up below records the verified results. Zoho CRM, Power BI, and Ecommerce / Shopify remain unlaunched under the original authorization. No automatic budget increase, redistribution, scaling, or pause schedule was created. The broad campaign remains preserved in its observed OFF state.
 
 ## Dedicated landing pages and intended campaign structure
 
 These are the six production destinations. Their live/deployment verification status is recorded at the end of this report. They are deliberately excluded from public navigation, footer links, homepage cards, service indexes, breadcrumbs, XML sitemap, and `llms.txt`. They emit `noindex,nofollow`; AdsBot is allowed to retrieve them.
 
-All names below are **intended names only**, not created platform objects. Each proposed campaign requests United States targeting, Clicks objective, Maximum Results bidding, and a hard maximum of $5/day, subject to a platform mechanism that can enforce that limit.
+The names below document the **historical six-service plan**, not verified created platform objects. That original plan requested United States targeting, Clicks objective, Maximum Results bidding, and a hard maximum of $5/day. Current settings and exact saved names for the three subsequently approved campaigns belong in the publication follow-up below and supersede these historical planning rows where applicable.
 
 | Service | Landing page | Intended campaign | Intended ad group | Intended ad | Campaign parameter |
 |---|---|---|---|---|---|
@@ -29,7 +29,7 @@ Every page uses Optimion's existing dark visual style, a service-specific workfl
 
 ## Exact prepared ad copy and context hints
 
-The following headline and subtext are also the corresponding landing-page H1 and opening subtext. They remain prepared copy, not published ads. The live ad form's character limits were verified as **Title: 50 characters; Description: 100 characters**. All six prepared headline/subtext pairs fit these limits.
+The following headline and subtext document the original prepared copy and are also the corresponding landing-page H1 and opening subtext. They are not a record of published ads. Exact saved ad copy for the three approved campaigns is recorded in the publication follow-up below. The live ad form's character limits were verified as **Title: 50 characters; Description: 100 characters**. All six original headline/subtext pairs fit these limits.
 
 ### Zoho CRM
 
@@ -143,15 +143,17 @@ Context hints from the user's request:
 
 ## Destination URL parameter templates
 
-The live Ads Manager interface confirmed support for the platform placeholders shown here. These are literal setup templates, not real campaign or ad IDs. Apply the service's `utm_campaign` value from the table above; the platform fills the identifiers and click reference for actual ads.
+The live Ads Manager interface supports the campaign/ad-group/ad placeholders below. These are literal setup templates, not real campaign or ad IDs. The campaign-level tracking parameter value is `utm_source=chatgpt&utm_medium=paid_ai&utm_campaign=<service_value>&utm_content={ad_id}&campaign_id={campaign_id}&ad_group_id={ad_group_id}&ad_id={ad_id}`.
+
+**Do not add `oppref={oppref}` to custom tracking parameters.** `oppref` is a reserved native click reference. The website captures and preserves a validated inbound `oppref` if the platform supplies one. Its propagation through an actual paid-ad click has not been verified. The full URLs below show the intended destination plus valid campaign-level parameter template; the actual saved UI fields must be verified separately.
 
 ```text
-https://optimion.us/solutions/zoho-crm?utm_source=chatgpt&utm_medium=paid_ai&utm_campaign=zoho_crm&utm_content={ad_id}&campaign_id={campaign_id}&ad_group_id={ad_group_id}&ad_id={ad_id}&oppref={oppref}
-https://optimion.us/solutions/crm-integration?utm_source=chatgpt&utm_medium=paid_ai&utm_campaign=crm_integration&utm_content={ad_id}&campaign_id={campaign_id}&ad_group_id={ad_group_id}&ad_id={ad_id}&oppref={oppref}
-https://optimion.us/solutions/erp-business-central?utm_source=chatgpt&utm_medium=paid_ai&utm_campaign=erp_business_central&utm_content={ad_id}&campaign_id={campaign_id}&ad_group_id={ad_group_id}&ad_id={ad_id}&oppref={oppref}
-https://optimion.us/solutions/business-automation?utm_source=chatgpt&utm_medium=paid_ai&utm_campaign=business_automation&utm_content={ad_id}&campaign_id={campaign_id}&ad_group_id={ad_group_id}&ad_id={ad_id}&oppref={oppref}
-https://optimion.us/solutions/power-bi?utm_source=chatgpt&utm_medium=paid_ai&utm_campaign=power_bi&utm_content={ad_id}&campaign_id={campaign_id}&ad_group_id={ad_group_id}&ad_id={ad_id}&oppref={oppref}
-https://optimion.us/solutions/ecommerce-integration?utm_source=chatgpt&utm_medium=paid_ai&utm_campaign=ecommerce_integration&utm_content={ad_id}&campaign_id={campaign_id}&ad_group_id={ad_group_id}&ad_id={ad_id}&oppref={oppref}
+https://optimion.us/solutions/zoho-crm?utm_source=chatgpt&utm_medium=paid_ai&utm_campaign=zoho_crm&utm_content={ad_id}&campaign_id={campaign_id}&ad_group_id={ad_group_id}&ad_id={ad_id}
+https://optimion.us/solutions/crm-integration?utm_source=chatgpt&utm_medium=paid_ai&utm_campaign=crm_integration&utm_content={ad_id}&campaign_id={campaign_id}&ad_group_id={ad_group_id}&ad_id={ad_id}
+https://optimion.us/solutions/erp-business-central?utm_source=chatgpt&utm_medium=paid_ai&utm_campaign=erp_business_central&utm_content={ad_id}&campaign_id={campaign_id}&ad_group_id={ad_group_id}&ad_id={ad_id}
+https://optimion.us/solutions/business-automation?utm_source=chatgpt&utm_medium=paid_ai&utm_campaign=business_automation&utm_content={ad_id}&campaign_id={campaign_id}&ad_group_id={ad_group_id}&ad_id={ad_id}
+https://optimion.us/solutions/power-bi?utm_source=chatgpt&utm_medium=paid_ai&utm_campaign=power_bi&utm_content={ad_id}&campaign_id={campaign_id}&ad_group_id={ad_group_id}&ad_id={ad_id}
+https://optimion.us/solutions/ecommerce-integration?utm_source=chatgpt&utm_medium=paid_ai&utm_campaign=ecommerce_integration&utm_content={ad_id}&campaign_id={campaign_id}&ad_group_id={ad_group_id}&ad_id={ad_id}
 ```
 
 ## Preserved broad Optimion campaign
@@ -206,7 +208,7 @@ Ads Manager's Event Stream verified production `page_viewed`, `consultation_cta_
 
 GA4 Realtime verified `landing_page_view`, `consultation_click`, `booking_opened`, and `booking_started` receipt. Drilling into `landing_page_view` showed campaign/ad-group/ad, anonymous-session, and attribution parameters; campaign-ID values distinguished the synthetic QA service sources. Newly registered custom dimensions can take time to populate standard/exploration reports; Realtime receipt is separate from processed reporting.
 
-The remaining Ads diagnostics warnings are **No active campaigns use conversion events** (expected because launch is budget-blocked) and **No recent server-to-server events** (this implementation uses the browser pixel, not Conversions API). No API key was created to silence that warning.
+At the initial pre-publication validation, Ads diagnostics displayed **No active campaigns use conversion events** (expected while launch was budget-blocked) and **No recent server-to-server events** (this implementation uses the browser pixel, not Conversions API). The three subsequently published campaigns now have the booking goal attached, as recorded below; the initial warning is historical rather than a statement that no campaigns currently use the goal. No API key was created to silence the server-to-server warning.
 
 The remote pixel's automatic matching setting is enabled. The visible edit interface offered a name field but no toggle to disable automatic matching. The application does not deliberately send attendee names, emails, or phone numbers in funnel events; that is not a claim that the provider's automatic matching feature is disabled. Event calls set `opt_out: true`, which restricts future personalization, not measurement.
 
@@ -287,7 +289,7 @@ The copied NonConverters segment and Paid Search filter were removed so `paid_ai
 
 For manual reconciliation, match Cal.com's stored UTM campaign/content and metadata campaign/ad identifiers to the campaign export and the GA4 funnel. Aggregate counts at the same reporting dates and attribution window. Avoid summing the legacy completion event and the new completion event as separate bookings. Different platforms can report different counts because of attribution windows, delivery loss, and privacy settings.
 
-Use **N/A** for an unavailable metric or undefined denominator. With no observed completed bookings, cost per booking is N/A, not $0. With the six service campaigns unlaunched, their delivery, spend, and conversion results are not yet a completed comparison test.
+Use **N/A** for an unavailable metric or undefined denominator. With no observed completed bookings, cost per booking is N/A, not $0. The initial six-service comparison was not launched; publication status and subsequent results for the three newly approved campaigns must be recorded separately. The other three service campaigns remain unlaunched.
 
 ## Repository implementation
 
@@ -308,7 +310,7 @@ CTA identifiers are `solution_<slug>_hero`, `solution_<slug>_mid`, and `solution
 
 The existing site is Next.js 15.5.23 / React 19, using the Pages Router and Tailwind 3. Public service routes and SEO catalogs were preserved. The existing stack is GTM / GA4 plus Cal.com (`optimion/30min`) for booking; there is no native contact form on the parent website. The prior source included optional OpenAI-pixel wiring without a configured real pixel, legacy CTA/calendar events, and booking callbacks without the new source-validation, session attribution, or UID ledger. Campaign parameters were not previously retained across the website journey. This change reuses that stack rather than adding another reporting vendor.
 
-## Final verification record
+## Initial implementation final verification record
 
 - [x] Full repository lint completes successfully.
 - [x] Production build completes successfully.
@@ -324,7 +326,7 @@ The existing site is Next.js 15.5.23 / React 19, using the Pages Router and Tail
 - [x] GA4 `discovery_call_booked` is marked as the key event with once-per-event counting and legacy `booked_consult` is unmarked. No real booking count is claimed.
 - [x] Privacy disclosure updated to describe delivered campaign/session and booking attribution behavior.
 - [x] Provider automatic-matching status and browser-only measurement limitations are disclosed above.
-- [x] No service campaign/ad group/ad created or launched; no budget increased and no new spend initiated.
+- [x] At completion of the initial implementation, no service campaign/ad group/ad had been created or launched; no budget had been increased and no new spend had been initiated. The three-campaign follow-up below has separate authorization and verified results.
 - [x] Existing Optimion campaign preserved OFF at its observed settings.
 - [x] Application funnel events include no secrets or raw attendee details; public browser pixel/measurement IDs only. Third-party automatic-collection caveat remains above.
 - [x] Website source commit pushed: **`edca163ad0fd96bd11cc25cb9a444d8061954558`**.
@@ -346,4 +348,145 @@ Screenshots are intentionally excluded from Git because they contain authenticat
 - `cal-dry-run-confirmation.png`: synthetic official test-mode form before approved confirmation.
 - `cal-dry-run-success.png`: provider's successful dry-run result within the Optimion test-mode modal.
 
-Remaining external decision: the requested advertising test cannot be launched under the platform's observed budget rules without a supported hard-cap mechanism or a different explicit user authorization. No higher budget is authorized by this implementation report.
+## Publication follow-up — three approved service campaigns
+
+The user explicitly approved publication of **CRM Integration**, **ERP & Business Central**, and **Business Automation** at **$25 average/day each**, understanding the platform's potential to spend **$50 per campaign in a day**. Across these three campaigns, that is **$75 average/day** and a potential **$150 in a day**, not a $75 hard daily cap. The user also explicitly approved the **Advertising Tool Terms for all three**. This authorization does not extend to launching Zoho CRM, Power BI, Ecommerce / Shopify, increasing any of these budgets, or activating the preserved broad campaign.
+
+**All three campaigns were successfully published and the final campaign table showed all three ON and Serving at $25/day, with the old broad campaign OFF in the same view.** Each creation result confirmed one ad group and one ad. All three ad-group switches are ON. CRM and ERP ads were directly observed Serving; the Automation ad initially displayed Not Serving / Review Pending before the final campaign table showed that campaign Serving. All three ads are saved with `active` status in the Ads for edit export. The final campaign Serving state is the authoritative current delivery signal; a separate Automation-ad review-state recheck is not claimed, and no pending campaign-level review is reported. A Serving label is not a measurement of impressions, clicks, spend, or completed bookings; no new campaign-performance totals are claimed here.
+
+| Service | Approved average daily budget | Disclosed potential in one day | Landing page | Campaign parameter | Verified publication result |
+|---|---:|---:|---|---|---|
+| CRM Integration | $25 | $50 | https://optimion.us/solutions/crm-integration | `crm_integration` | Published · ON · Serving |
+| ERP & Business Central | $25 | $50 | https://optimion.us/solutions/erp-business-central | `erp_business_central` | Published · ON · Serving |
+| Business Automation | $25 | $50 | https://optimion.us/solutions/business-automation | `business_automation` | Published · ON · Serving |
+
+### Shared verified settings
+
+- Average daily budget: **$25.00 per campaign**, daily budget type; the disclosed potential remains $50 per campaign in a day.
+- Objective: **Clicks**; billing event: **click**; bid strategy: **Maximize Results**.
+- Location: **United States**, verified in the UI; export location ID **`1000232`**.
+- Platform families in the export: **`ios_app`**, **`android_app`**, and **`web`**.
+- AI-generated text: **Off**. No campaign end date is set.
+- Advertising Tool Terms were confirmed within the explicitly approved publication workflows.
+- The only attached conversion goal is **Discovery Call Booked / `appointment_scheduled`**. All three campaign exports contain exactly `conversion_event_setting_ids=["6acbcf79021c819cb680efd52ad502c6"]`; the goal name was verified in the review UI.
+- Existing goal definitions and the **30-day click / 1-day view** attribution settings were preserved; this follow-up attached the existing goal to the three campaigns rather than modifying its definition or windows.
+- Campaign-level UTM/ad-identifier tracking templates were saved and validated. No reserved `oppref` custom parameter is configured.
+
+The campaign objective is Clicks with completed-booking measurement attached; conversion-optimized bidding is not claimed. Secondary website funnel events remain available for reporting. Prior secondary-event receipt and the official dry run remain valid implementation evidence; they do not establish genuine bookings or paid-click attribution for these new campaigns.
+
+### CRM Integration — saved configuration
+
+- Campaign: **Optimion | CRM Integration | US** — **`cmpn_6acbe9fefc348191af033b24d18d82fd`**.
+- Ad group: **CRM Integration | High Intent** — **`adgrp_4ac2936e7b108191bc81fbccdc162e0f`**.
+- Ad: **CRM Integration | Systems Sync** — **`ad_6acbea0725bc819a888f852f6b2af6a1`**, export status `active`.
+- Configured start timestamp: **October 11, 2026, 3:41:31 PM Eastern** (`2026-10-11T19:41:31Z` in the export).
+- Title: **CRM Integration & Automation**.
+- Description: **Connect HubSpot, Zoho and business systems. Automate routing and customer handoffs.**
+- Saved ad destination: **https://optimion.us/solutions/crm-integration**.
+
+Saved campaign-level tracking parameters:
+
+```text
+utm_source=chatgpt&utm_medium=paid_ai&utm_campaign=crm_integration&utm_content={ad_id}&campaign_id={campaign_id}&ad_group_id={ad_group_id}&ad_id={ad_id}
+```
+
+Exact ten saved context hints:
+
+- Businesses seeking CRM integration consulting
+- Teams connecting HubSpot or Zoho CRM to accounting and ecommerce
+- Companies automating lead assignment and routing
+- Sales teams automating lifecycle and onboarding handoffs
+- Teams resolving duplicate contacts and inconsistent customer records
+- Companies synchronizing customer records and sales orders between CRM and accounting
+- Businesses replacing manual handoffs after a deal is won
+- Teams planning CRM field mapping or data migration
+- Companies connecting custom CRMs through APIs or webhooks
+- Teams needing visible CRM integration failures and exception handling
+
+### ERP & Business Central — saved configuration
+
+- Campaign: **Optimion | ERP & Business Central | US** — **`cmpn_6acbea5674d88199858333c39636e2f8`**.
+- Ad group: **ERP & Business Central | High Intent** — **`adgrp_b41d0dfd0d208199bdbd9b1022176d7a`**.
+- Ad: **Business Central | ERP Integration** — **`ad_6acbea5e9fac81a290fde7fbf12e5ee7`**, export status `active`.
+- Configured start timestamp: **October 11, 2026, 3:57:15 PM Eastern** (`2026-10-11T19:57:15Z` in the export).
+- Title: **Business Central Integration**.
+- Description: **Connect Business Central with CRM, inventory and operations. Book a free discovery call.**
+- Saved ad destination: **https://optimion.us/solutions/erp-business-central**.
+
+Saved campaign-level tracking parameters:
+
+```text
+utm_source=chatgpt&utm_medium=paid_ai&utm_campaign=erp_business_central&utm_content={ad_id}&campaign_id={campaign_id}&ad_group_id={ad_group_id}&ad_id={ad_id}
+```
+
+Exact ten saved context hints:
+
+- Businesses seeking Microsoft Dynamics 365 Business Central integration consulting
+- Teams connecting Business Central with CRM or ecommerce or warehouse systems
+- Companies automating ERP sales-order and purchasing workflows
+- Businesses synchronizing inventory across ERP and operational platforms
+- Teams integrating Business Central through APIs and OData and custom endpoints
+- Purchasing teams automating vendor updates with Power Automate
+- Companies connecting ERP approvals and documents to Microsoft 365
+- Teams assessing EDI provider interfaces and transaction mapping
+- Businesses needing focused Business Central AL extensions
+- Companies reducing manual ERP data entry and disconnected handoffs
+
+### Business Automation — saved configuration
+
+- Campaign: **Optimion | Business Automation | US** — **`cmpn_6acbea8f042c81a1849806884cd81090`**.
+- Ad group: **Business Automation | High Intent** — **`adgrp_5af0fbc2853481a186d4332357e9d79c`**.
+- Ad: **Business Automation | Custom Workflows** — **`ad_6acbea96430c819585062dbd8b7fff78`**, export status `active`.
+- Configured start timestamp: **October 11, 2026, 3:58:40 PM Eastern** (`2026-10-11T19:58:40Z` in the export).
+- Title: **Business Process Automation**.
+- Description: **Automate approvals, documents and system handoffs with workflows built for your business.**
+- Saved ad destination: **https://optimion.us/solutions/business-automation**.
+
+Saved campaign-level tracking parameters:
+
+```text
+utm_source=chatgpt&utm_medium=paid_ai&utm_campaign=business_automation&utm_content={ad_id}&campaign_id={campaign_id}&ad_group_id={ad_group_id}&ad_id={ad_id}
+```
+
+Exact ten saved context hints:
+
+- Businesses seeking workflow and process automation consulting
+- Teams building Power Automate approval workflows
+- Companies automating email and PDF document intake
+- Teams automating routine notifications and follow-ups and escalations
+- Businesses connecting applications through APIs and webhooks
+- Companies replacing spreadsheet-driven operational handoffs
+- Teams automating task creation and business-system updates
+- Businesses using AI document extraction with human review
+- Companies reducing repetitive back-office administration
+- Teams needing workflow validation and retries and exception handling
+
+The comma-free entries above were read back from the saved ad-group tables. Context hints guide conversational matching; they are not exact-match search keywords. See the official [ChatGPT Ads campaign targeting documentation](https://developers.openai.com/ads/campaign-targeting).
+
+### Publication and validation evidence
+
+Read-only campaign and ad exports independently confirm the saved IDs, budget/objective/goal fields, launch timestamps, creative text, active ad status, and base destination URLs:
+
+- `C:/Users/ivan/Downloads/campaigns-for-edit.csv`
+- `C:/Users/ivan/Downloads/ads-for-edit.csv`
+
+Ignored local evidence copies are retained as `artifacts/funnel-validation/published-campaigns-for-edit-2026-10-11.csv` and `artifacts/funnel-validation/published-ads-for-edit-2026-10-11.csv`.
+
+The authenticated UI verified campaign ON/Serving status, group switches, ten saved hints per group, bidding/location/AI-text settings, conversion-goal association, and the tracking-parameter templates. Local evidence screenshots are `artifacts/funnel-validation/ads-three-campaigns-serving.png` and `artifacts/funnel-validation/ads-three-published-creatives.png`. These local exports and screenshots are not embedded in the repository report.
+
+Independent production checks returned **200** for all three destinations with matching service content, consultation CTAs, and noindex response headers. A read-only tracking review reconfirmed the test-mode guard, session deduplication, attribution preservation, and browser-only limits. The other three service campaigns remain unlaunched, and the original **Optimion campaign** remains OFF and unchanged.
+
+The website continues to capture native inbound `oppref` where supplied and to preserve campaign context through the booking flow. Macro substitution, native click-reference propagation, genuine booking receipt, and attributed campaign performance require actual delivery evidence and are not inferred from a successful save.
+
+### Follow-up validation record
+
+- [x] All three publication results and exact campaign/ad-group/ad identifiers recorded. All three campaign switches are ON and the final campaign table shows Serving.
+- [x] All three saved budgets are $25 average/day; potential $50/day each remains disclosed.
+- [x] United States location, Clicks objective, Maximize Results bid strategy, only Discovery Call Booked conversion goal, and saved state verified for each.
+- [x] Exact ad copy, ten context hints, base destination, and valid campaign tracking parameters recorded for each.
+- [x] Other three service campaigns remain unlaunched; the broad Optimion campaign remains OFF.
+- [x] Initial Automation-ad review status is distinguished from the latest campaign Serving status; no separate Automation-ad reevaluation or delivery totals are inferred.
+- [x] All three production landing pages return 200 with the expected content, CTA, and noindex response header; tracking guard/deduplication/attribution review passed.
+- [x] No genuine booking, paid-click propagation, or campaign performance result claimed without observed evidence.
+
+Still unverified: a genuine completed-booking ingestion and an actual paid click's macro substitution/native `oppref` propagation. These are measurement limitations to observe during real delivery, not fabricated results or additional publication blockers.
