@@ -4,7 +4,7 @@ As of October 11, 2026. This is an internal configuration and validation record;
 
 ## Status and spending limits
 
-Six service landing pages and their attribution implementation are deployed in website commit `edca163ad0fd96bd11cc25cb9a444d8061954558`. Full lint, production build, and the final automated suite passed: **45 passed, 3 skipped**. Vercel deployment `J6GqumYvLiZfVQgSqZyDhEeGr59v` is **Ready / Production**, with `optimion.us` assigned. Live secondary-event receipt is verified in Ads Manager and GA4. A genuine completed-booking receipt is not claimed; the official dry-run submission is held at Cal.com's Terms confirmation, awaiting separate authorization.
+Six service landing pages and their attribution implementation are deployed in website commit `edca163ad0fd96bd11cc25cb9a444d8061954558`. Full lint, production build, and the final automated suite passed: **45 passed, 3 skipped**. Vercel deployment `J6GqumYvLiZfVQgSqZyDhEeGr59v` is **Ready / Production**, with `optimion.us` assigned. Live secondary-event receipt is verified in Ads Manager and GA4. After explicit user authorization for Cal.com's Terms confirmation, the official dry run completed successfully on October 11, 2026, and the website received its test-completion callback. No real appointment or genuine completed-booking conversion receipt is claimed.
 
 **No new service campaigns, ad groups, or ads have been created or launched. No new advertising spend was initiated.** The live ChatGPT Ads interface requires a minimum average daily budget of **$25**, and its daily-budget explanation permits spending up to **2× the average daily budget** on a day. That cannot guarantee the user's hard **$5 maximum per service per day**. An average daily budget is not a hard daily spending cap. No attempt was made to bypass this limit or substitute the existing broad campaign for the six service tests.
 
@@ -318,7 +318,7 @@ The existing site is Next.js 15.5.23 / React 19, using the Pages Router and Tail
 - [x] Every solution emits HTML and response-header noindex; all 11 public sitemap pages were checked with zero solution links. Sitemap and `llms.txt` exclude solutions. Public pages remain indexable; robots allows AdsBot.
 - [x] Desktop production visuals reviewed for all six pages. Six 390×844 mobile screenshots of the identical local production build were reviewed with external providers isolated; no clipping and prominent full-width CTAs. The in-app browser's viewport override did not change its actual 1280×720 viewport, so production mobile visual emulation is not claimed.
 - [x] Actual Cal embeds preserve each service's UTMs and metadata and display a usable calendar. All six booking-start events were received in Ads Manager.
-- [ ] Official dry-run journey completes without a real appointment or primary conversion.
+- [x] Official dry-run journey completes without a real appointment; the website receives its diagnostic-only completion callback and the test-mode guard excludes primary conversion dispatch.
 - [x] GA4 receives secondary funnel events with distinct campaign identifiers; Realtime parameters were inspected.
 - [x] Ads Manager receives page/CTA/open/start QA events. Real completed-booking ingestion remains unverified, not fabricated.
 - [x] GA4 `discovery_call_booked` is marked as the key event with once-per-event counting and legacy `booked_consult` is unmarked. No real booking count is claimed.
@@ -330,7 +330,9 @@ The existing site is Next.js 15.5.23 / React 19, using the Pages Router and Tail
 - [x] Website source commit pushed: **`edca163ad0fd96bd11cc25cb9a444d8061954558`**.
 - [x] Production deployment verified: [J6GqumYvLiZfVQgSqZyDhEeGr59v](https://vercel.com/ivans-projects-7d2664cd/optimion-site/J6GqumYvLiZfVQgSqZyDhEeGr59v), **Ready / Production**, commit `edca163`, assigned to `optimion.us`.
 
-The explicit `?booking_test=1` flag is per opening, never persisted, and passes the provider's exact `cal.isBookingDryRun=true` configuration. Both Optimion and the real Cal.com interface visibly identify test mode. The live journey reached the final form with synthetic QA details, but **Confirm was not clicked** because it includes agreement to Cal.com's Terms; separate user approval was requested. Isolated tests verify `dryRunBookingSuccessfulV2` is diagnostic only and that even a normal-success callback fails closed in test mode. No appointment was created. No completed server-stored booking metadata record, real primary pixel ingestion, or end-to-end paid-ad click is claimed.
+The explicit `?booking_test=1` flag is per opening, never persisted, and passes the provider's exact `cal.isBookingDryRun=true` configuration. Both Optimion and the real Cal.com interface visibly identify test mode. After the user explicitly authorized confirming this official dry run and accepting Cal.com's Terms, **Confirm was clicked once** with synthetic QA details on October 11, 2026. The provider displayed **Booking dry run successful** / **The dry run was completed successfully**. The website's `[data-cal-container]` also changed to `data-cal-test-state="complete"`, confirming receipt of the trusted `dryRunBookingSuccessfulV2` callback.
+
+This callback emits only the `booking_test_completed` diagnostic, which has no GA4 funnel or OpenAI-pixel conversion mapping. The separate normal-success callback returns immediately in test mode, before either `booked_consult` or `cal_booking_success` dispatch. Isolated tests and a fresh read-only source review confirm that guard. No appointment was created by the official provider dry run. No completed server-stored booking metadata record, real primary pixel ingestion, or end-to-end paid-ad click is claimed; a successful diagnostic test is deliberately not a real conversion.
 
 ### Local evidence
 
@@ -341,6 +343,7 @@ Screenshots are intentionally excluded from Git because they contain authenticat
 - `ads-conversion-events.png` and `ga4-primary-key-event.png`: configured goals.
 - `ads-live-funnel-events.png` and `ads-six-service-booking-starts.png`: actual secondary-event receipt.
 - `ga4-live-campaign-ids.png`, `ga4-live-funnel-events.png`, and `ga4-service-funnel.png`: actual GA4 receipt and saved reporting setup.
-- `cal-dry-run-confirmation.png`: official test-mode form held at Terms confirmation.
+- `cal-dry-run-confirmation.png`: synthetic official test-mode form before approved confirmation.
+- `cal-dry-run-success.png`: provider's successful dry-run result within the Optimion test-mode modal.
 
 Remaining external decision: the requested advertising test cannot be launched under the platform's observed budget rules without a supported hard-cap mechanism or a different explicit user authorization. No higher budget is authorized by this implementation report.
