@@ -1,18 +1,21 @@
 // pages/_app.js
 import "../styles/globals.css";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useRouter } from "next/router";
 import Script from "next/script";
 import Header from "@/Components/Header";
 import Footer from "@/Components/Footer";
 import AnalyticsBridge from "@/Components/AnalyticsBridge";
 import OpenAIAdsPixel from "@/Components/OpenAIAdsPixel";
+import { captureAttribution, newEventId, serviceFromPath } from "@/lib/attribution";
+import { gaEvent, measureOpenAI } from "@/lib/gtag";
 
 // Use env var if present, fall back to your GTM container ID
 const GTM_ID = process.env.NEXT_PUBLIC_GTM_ID || "GTM-PQJFJPTW";
 
 export default function App({ Component, pageProps }) {
   const router = useRouter();
+  const lastMeasuredPage = useRef("");
 
   // Restore predictable navigation for both the window and the desktop body scrollport.
   useEffect(() => {
@@ -40,26 +43,29 @@ export default function App({ Component, pageProps }) {
     return () => router.events.off("routeChangeComplete", restoreRouteScroll);
   }, [router.events, router.asPath]);
 
-  // Push virtual pageviews for SPA navigations to GTM
+  // Capture first-party campaign context before measuring initial or SPA views.
   useEffect(() => {
-    const handleRouteChange = (url) => {
-      window.dataLayer = window.dataLayer || [];
-      window.dataLayer.push({
-        event: "page_view",
-        page_path: url,
-        page_location: window.location.href,
-        page_title: document.title,
-      });
-      if (typeof window.oaiq === "function") {
-        window.oaiq("measure", "page_viewed", {
-          type: "contents",
-          contents: [{ id: url.split("?")[0], name: document.title, content_type: "page" }],
-        });
-      }
+    if (!router.isReady) return;
+    const measurePage = (virtual = false) => {
+      const routeKey = window.location.pathname + window.location.search;
+      if (lastMeasuredPage.current === routeKey) return;
+      lastMeasuredPage.current = routeKey;
+      captureAttribution();
+      const path = window.location.pathname;
+      const params = { page_path: path, page_location: window.location.origin + path, page_title: document.title };
+      // GTM's Google tag measures the initial page; only SPA views need a page_view push.
+      if (virtual) gaEvent("page_view", params);
+      if (serviceFromPath(path)) gaEvent("landing_page_view", params);
+      measureOpenAI("page_viewed", {
+        type: "contents",
+        contents: [{ id: path, name: document.title, content_type: "page" }],
+      }, { event_id: newEventId("page") });
     };
+    measurePage();
+    const handleRouteChange = () => measurePage(true);
     router.events.on("routeChangeComplete", handleRouteChange);
     return () => router.events.off("routeChangeComplete", handleRouteChange);
-  }, [router.events]);
+  }, [router.events, router.isReady]);
 
   return (
     <>

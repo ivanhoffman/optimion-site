@@ -14,7 +14,7 @@ export default function AnalyticsBridge() {
       const el = e.target.closest?.("[data-evt]");
       if (!el) return;
 
-      const { evt, place, id, method, to, percent, question, source } = el.dataset;
+      const { evt, place, id, method, to, percent, question, source, kind } = el.dataset;
       gaEvent(evt, {
         place,
         id,
@@ -22,6 +22,7 @@ export default function AnalyticsBridge() {
         to,
         question,
         source,
+        kind,
         ...(percent ? { percent: Number(percent) } : {}),
       });
     };
@@ -68,16 +69,17 @@ export default function AnalyticsBridge() {
 
     // push to GTM so CE — scroll_depth triggers your GA4 tag
     const pushDepth = (m) => {
-      window.dataLayer = window.dataLayer || [];
-      window.dataLayer.push({ event: "scroll_depth", percent: m });
+      gaEvent("scroll_depth", { percent: m });
     };
 
     // % scrolled = scrollTop / (scrollHeight - viewport) * 100
     const getPct = () => {
-      const se = document.scrollingElement || document.documentElement;
-      const scrollable = Math.max(se.scrollHeight - window.innerHeight, 0);
+      const bodyScrolls = getComputedStyle(document.documentElement).overflowY === "hidden";
+      const se = bodyScrolls ? document.body : document.scrollingElement || document.documentElement;
+      const viewport = bodyScrolls ? se.clientHeight : window.innerHeight;
+      const scrollable = Math.max(se.scrollHeight - viewport, 0);
       if (scrollable === 0) return 100; // very short page
-      const y = window.scrollY || se.scrollTop || 0;
+      const y = bodyScrolls ? se.scrollTop : window.scrollY || se.scrollTop || 0;
       const pct = Math.round((y / scrollable) * 100);
       return Math.max(0, Math.min(100, pct));
     };
@@ -110,6 +112,7 @@ export default function AnalyticsBridge() {
 
     const stop = () => {
       window.removeEventListener("scroll", onTick);
+      document.body.removeEventListener("scroll", onTick);
       window.removeEventListener("resize", onTick);
       window.removeEventListener("hashchange", onTick);
       window.removeEventListener("pageshow", onTick);
@@ -121,6 +124,7 @@ export default function AnalyticsBridge() {
     // prime + listeners
     check();
     window.addEventListener("scroll", onTick, { passive: true });
+    document.body.addEventListener("scroll", onTick, { passive: true });
     window.addEventListener("resize", onTick);
     window.addEventListener("hashchange", onTick);
     window.addEventListener("pageshow", onTick);

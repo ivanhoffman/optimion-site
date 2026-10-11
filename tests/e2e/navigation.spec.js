@@ -1,4 +1,4 @@
-const { test, expect } = require("@playwright/test");
+const { test, expect } = require("./fixtures");
 
 const services = [
   ["business-systems-automation", "Business Systems Automation & Integration"],

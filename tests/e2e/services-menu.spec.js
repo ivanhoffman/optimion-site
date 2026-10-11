@@ -1,4 +1,4 @@
-const { test, expect } = require("@playwright/test");
+const { test, expect } = require("./fixtures");
 
 const desktopViewports = [
   { width: 1366, height: 599 },

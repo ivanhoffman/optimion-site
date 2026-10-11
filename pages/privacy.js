@@ -1,7 +1,7 @@
 // pages/privacy.js
 import SEO from "@/Components/SEO";
 
-const UPDATED = "August 2026";
+const UPDATED = "October 2026";
 
 export default function PrivacyPage() {
   return (
@@ -56,12 +56,23 @@ export default function PrivacyPage() {
             URLs may include UTM parameters and OpenAI&apos;s privacy-preserving click reference. The OpenAI pixel may store
             that reference in a first-party cookie for attribution. We don’t sell personal information.
           </p>
+          <p className="mt-3 text-gray-300">
+            We store an anonymous session identifier, landing-page path, and campaign, ad-group, and ad parameters in
+            first-party browser session storage. This preserves campaign source information as you browse and open
+            the booking interface. We measure page visits, consultation CTA clicks, booking starts, and completed
+            bookings. Session storage is normally limited to the current browser session. We do not use browser
+            fingerprinting or attempt to identify anonymous visitors.
+          </p>
 
-          {/* Calendly */}
+          {/* Booking attribution */}
           <h2 className="mt-10 text-xl font-semibold">Cal.com</h2>
           <p className="mt-3 text-gray-300">
-            When you book a meeting through Cal.com, your submission is processed by Cal.com per their terms and
-            privacy policy. We use the data only to manage your appointment.
+            When you open our booking interface, we may pass campaign parameters and anonymous attribution metadata
+            to Cal.com. If you book, that metadata can be stored alongside your booking so we can understand which
+            campaign generated the consultation. Cal.com processes the details you submit under its terms and
+            privacy policy. We use booking information to manage your appointment and measure the source of
+            consultation requests. We do not include raw attendee names, email addresses, or phone numbers in
+            browser advertising events.
           </p>
 
           {/* Data Sharing */}
@@ -70,7 +81,7 @@ export default function PrivacyPage() {
             <li>We don’t sell or rent your data.</li>
             <li>
               We may share limited information with vendors that help us operate the site or deliver services (e.g.,
-              hosting, scheduling, analytics), bound by confidentiality and data-processing terms.
+              hosting, scheduling, analytics, advertising measurement), bound by confidentiality and data-processing terms.
             </li>
           </ul>
 
